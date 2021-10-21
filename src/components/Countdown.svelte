@@ -1,29 +1,44 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
+
   export let showClock = false;
   export let date: Date;
-
+  export let index: Number;
+  
   interface TimeRemaining {
     days: number;
     hours?: number;
     minutes?: number;
     seconds?: number;
   }
+  
+  const dispatch = createEventDispatcher();
 
-  let calcMillis = () => date.getTime() - Date.now();
+  const calcMillis = () => date.getTime() - Date.now();
+  const isDayOf = () => millis < 863e5;
+  const isDone = () => millis <= 0;
+  
+  const days = (ms) => (showClock || isDayOf ? Math.floor : Math.ceil)(ms / 864e5);
+  const hours = (ms) => Math.floor(ms % 864e5 / 36e5);
+  const minutes = (ms) => Math.floor((ms % 36e5) / 6e4);
+  const seconds = (ms) => Math.floor(ms % 6e4 / 1e3);
+  
   let millis = calcMillis();
-  setInterval(() => millis = calcMillis(), 1e3);
 
-  let days = (ms, clock) => (clock ? Math.floor : Math.ceil)(ms / 864e5);
-  let hours = (ms) => Math.floor(ms % 864e5 / 36e5);
-  let minutes = (ms) => Math.floor((ms % 36e5) / 6e4);
-  let seconds = (ms) => Math.floor(ms % 6e4 / 1e3);
+  let interval = setInterval(() => {
+    millis = calcMillis()
+    if (isDone()) {
+      clearInterval(interval);
+      setTimeout(() => dispatch('done', index), 3e3);
+    }
+  }, 1e2);
 </script>
 
 <div class="digit-flow">
   <div class="digit">
-    <span class="title">Days</span> <span class="number">{days(millis, showClock)}</span>
+    <span class="title">Days</span> <span class="number">{days(millis)}</span>
   </div>
-  {#if showClock}
+  {#if showClock || isDayOf()}
   <div class="digit">
     <span class="title">Hours</span> <span class="number">{hours(millis)}</span>
   </div>
