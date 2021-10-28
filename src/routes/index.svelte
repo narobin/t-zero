@@ -11,9 +11,7 @@
 
   let timers: Timer[] = [];
 
-  $page.query.forEach((millis, name) => timers.push({ name, date: new Date(Number(millis)) }));
-
-  $page.query.forEach(console.log)
+  (new URLSearchParams(window.location.search)).forEach((millis, name) => timers.push({ name, date: new Date(Number(millis)) }));
 
   timers = timers
     .filter(val => val && val.name && val.date)
