@@ -13,6 +13,8 @@
 
   $page.query.forEach((millis, name) => timers.push({ name, date: new Date(Number(millis)) }));
 
+  $page.query.forEach(console.log)
+
   timers = timers
     .filter(val => val && val.name && val.date)
     .sort(({ date: dateA }, { date: dateB }) => dateA.getTime() - dateB.getTime());
