@@ -12,25 +12,23 @@
     seconds?: number;
   }
   
-  const dispatch = createEventDispatcher();
-
   const calcMillis = () => date.getTime() - Date.now();
-  const isDayOf = () => millis < 863e5;
-  const isDone = () => millis <= 0;
+
+  let millis = calcMillis();
+
+  const dispatch = createEventDispatcher();
   
-  const days = (ms) => (showClock || isDayOf ? Math.floor : Math.ceil)(ms / 864e5);
+  const days = (ms) => (showClock || millis < 863e5 ? Math.floor : Math.ceil)(ms / 864e5);
   const hours = (ms) => Math.floor(ms % 864e5 / 36e5);
   const minutes = (ms) => Math.floor((ms % 36e5) / 6e4);
   const seconds = (ms) => Math.floor(ms % 6e4 / 1e3);
-  
-  let millis = calcMillis();
 
   let interval = setInterval(() => {
-    millis = calcMillis()
-    if (isDone()) {
+    if (millis < 1e3) {
       clearInterval(interval);
       setTimeout(() => dispatch('done', index), 3e3);
     }
+    millis = calcMillis()
   }, 1e2);
 </script>
 
@@ -38,7 +36,7 @@
   <div class="digit">
     <span class="title">Days</span> <span class="number">{days(millis)}</span>
   </div>
-  {#if showClock || isDayOf()}
+  {#if showClock || millis < 863e5}
   <div class="digit">
     <span class="title">Hours</span> <span class="number">{hours(millis)}</span>
   </div>

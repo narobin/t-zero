@@ -2,7 +2,7 @@
   import Countdown from '../components/Countdown.svelte';
   import { page } from '$app/stores'
   import { goto } from '$app/navigation';
-  import { validate_each_argument } from 'svelte/internal';
+  import { onMount, validate_each_argument } from 'svelte/internal';
 
   interface Timer {
     name: string;
@@ -10,12 +10,6 @@
   }
 
   let timers: Timer[] = [];
-
-  $page.query.forEach((millis, name) => timers.push({ name, date: new Date(Number(millis)) }));
-
-  timers = timers
-    .filter(val => val && val.name && val.date)
-    .sort(({ date: dateA }, { date: dateB }) => dateA.getTime() - dateB.getTime());
 
   let showClock = false;
   let showAdd = false;
@@ -34,21 +28,37 @@
     showAdd = !showAdd;
   };
 
-  function addTimer() {
-    let timer = { name: newName, date: new Date(`${newDate}T${newTime}`) }
-    showAdd = false;
-    clearAdd();
+  const saveTimers = () => {
+    localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date.getTime()}`).join(','))
+  }
 
+  let addTimer = () => {
+    let timer = { name: newName, date: new Date(`${newDate}T${newTime}`) }
     timers.push(timer)
     timers = timers;
-
-    $page.query.append(timer.name, timer.date.getTime().toString())
-    goto(`?${$page.query.toString()}`)
+    
+    showAdd = false;
+    clearAdd();
+    saveTimers();
   }
 
   function removeTimer(i: number) {
-    $page.query.delete(timers.splice(i, 1)[0].name);
-  }
+    timers.splice(i, 1);
+    timers = timers;
+    saveTimers();
+  };
+
+  onMount(() => {
+    timers = localStorage.getItem('timers')
+      ?.split(',')
+      .filter(a => a)
+      .map(timer => {
+        const [ name, millis ] = timer.split('=');
+        // Error checking (both defined, types, etc.)
+        return { name, date: new Date(Number(millis)) };
+      })
+      .filter(val => val && val.name && val.date);
+  });
 </script>
 
 <header>
@@ -67,7 +77,7 @@
 </header>
 
 <div class="countdown-flow">
-  {#each timers as { name, date }, i}
+  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA.getTime() - dateB.getTime()) as { name, date }, i}
   <div class="countdown">
     <span class="title">{name}</span>
     <Countdown date={date} showClock={showClock} index={i} on:done={e => removeTimer(e.detail)} /><br>
@@ -84,6 +94,7 @@
     display: flex;
     align-items: stretch;
     flex-wrap: wrap;
+    height: 100%;
   }
 
   .countdown {
@@ -93,6 +104,7 @@
     border-radius: 1rem;
     flex-grow: 1;
     flex-basis: 0;
+    margin-bottom: 1rem;
   }
 
   .countdown .title {
