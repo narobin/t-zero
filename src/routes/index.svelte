@@ -51,6 +51,8 @@
     console.log(i);
     $page.query.delete(timers.splice(i, 1)[0].name);
   }
+
+  console.log(timers);
 </script>
 
 <header>
