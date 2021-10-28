@@ -57,7 +57,7 @@
         // Error checking (both defined, types, etc.)
         return { name, date: new Date(Number(millis)) };
       })
-      .filter(val => val && val.name && val.date);
+      .filter(val => val && val.name && val.date) || [];
   });
 </script>
 
@@ -91,10 +91,21 @@
   }
 
   .countdown-flow {
-    display: flex;
-    align-items: stretch;
-    flex-wrap: wrap;
-    height: 100%;
+    display: grid;
+    grid: auto-flow / repeat(4, 1fr);
+    grid-gap: 1rem;
+    /* align-items: stretch;
+    flex-wrap: wrap; */
+  }
+
+  @media screen and (max-width: 1000px) {
+    .countdown-flow { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media screen and (max-width: 700px) {
+    .countdown-flow { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media screen and (max-width: 400px) {
+    .countdown-flow { grid-template-columns: 1fr; }
   }
 
   .countdown {
@@ -104,7 +115,7 @@
     border-radius: 1rem;
     flex-grow: 1;
     flex-basis: 0;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
   }
 
   .countdown .title {
@@ -114,7 +125,7 @@
   }
 
   .countdown + .countdown {
-    margin-left: 1rem;
+    /* margin-left: 1rem; */
   }
 
   header {
