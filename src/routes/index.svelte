@@ -62,7 +62,7 @@
 </script>
 
 <header>
-  <img src="icon.svg" alt="T-0 Logo" />
+  <img id="Logo" src="icon.svg" alt="T-0 Logo" />
   <span class="flex-grow"></span>
   <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button>
   {#if showAdd}
@@ -85,7 +85,12 @@
   {/each}
 </div>
 
-<style>
+<style lang="scss">
+  @import '../_theme';
+
+  :global(body) { background-color: $background--dark; }
+  :global(*) { color: $text--dark; }
+
   * {
     font-family: 'Inter', sans-serif;
   }
@@ -111,21 +116,15 @@
   .countdown {
     text-align: center;
     padding: 1rem;
-    border: solid 1px lightgray;
+    border: 2px solid $primary-hover;
     border-radius: 1rem;
     flex-grow: 1;
     flex-basis: 0;
-    /* margin-bottom: 1rem; */
-  }
-
-  .countdown .title {
-    font-size: 2rem;
-    display: block;
-    margin-bottom: .5rem;
-  }
-
-  .countdown + .countdown {
-    /* margin-left: 1rem; */
+    .title {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: .5rem;
+    }
   }
 
   header {
@@ -144,34 +143,50 @@
 
   button {
     outline: none;
-    border: 2px solid rgb(73, 73, 245);
-    color: rgb(73, 73, 245);
+    border: 2px solid $primary-hover;
+    color: $primary-hover;
     font-weight: bold;
-    background: white;
+    background: transparent;
     border-radius: 1000rem;
     padding: .5rem .8rem;
   }
   button:hover {
     color: white;
-    background: rgb(73, 73, 245);
+    background: $primary-hover;
     cursor: pointer;
   }
 
   input {
     outline: none;
-    border: 2px solid black;
-    color: black;
+    border: 2px solid $primary;
+    // color: $text;
     font-weight: bold;
-    background: white;
+    background: transparent;
     border-radius: 1000rem;
     padding: .5rem .8rem;
+
+    &::placeholder {
+      // color: $text;
+      opacity: 1;
+    }
+
+    &:hover {
+      background: $primary-hover;
+      border-color: $primary-hover;
+      cursor: pointer;
+    }
+    
+    &:focus {
+      background: $primary;
+      border-color: $primary;
+      // color: $text;
+      &::placeholder { opacity: 0.8; }
+    }
   }
-  input:hover {
-    background: hsla(240, 90%, 80%, 50%);
-    cursor: text;
-  }
-  input:focus {
-    background: hsla(240, 90%, 62%, 90%);
-    color: white;
+
+  @media (prefers-color-scheme: light) {
+    :global(body) { background-color: $background--light; }
+    :global(*) { color: $text--light; }
+    #Logo { filter: invert(100%); }
   }
 </style>

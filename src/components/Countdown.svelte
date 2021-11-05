@@ -49,7 +49,9 @@
   {/if}
 </div>
 
-<style>
+<style lang="scss">
+  @import '../_theme';
+
   .digit {
     display: flex;
     flex-direction: column;
@@ -57,7 +59,7 @@
 
   .digit .title {
     font-size: .8rem;
-    color: lightgray;
+    color: lighten($text--light, 50%);
   }
 
   .digit .number {
