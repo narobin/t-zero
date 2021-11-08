@@ -109,6 +109,8 @@
       grid-template-columns: 6ch;
       grid-template-rows: repeat(2, 1fr);
       border-left: 2px solid $primary-hover;
+      background: $background--dark;
+      border-radius: 0 1rem 1rem 0;
       button {
         background: transparent;
         cursor: pointer;
@@ -118,5 +120,9 @@
       }
     }
     .buttons { display: none; }
+  }
+
+  @media (prefers-color-scheme: light) {
+    .buttons { background: $background--light; }
   }
 </style>
