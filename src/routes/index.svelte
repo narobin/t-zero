@@ -32,7 +32,7 @@
     localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date.getTime()}`).join(','))
   }
 
-  let addTimer = () => {
+  const addTimer = () => {
     let timer = { name: newName, date: new Date(`${newDate}T${newTime}`) }
     timers.push(timer)
     timers = timers;
@@ -42,7 +42,13 @@
     saveTimers();
   }
 
-  function removeTimer(i: number) {
+  const updateTimer = (i: number) => {
+    timers[i].name = prompt('Enter new name') || timers[i].name;
+    timers[i].date = new Date(prompt('Enter new date') || timers[i].date);
+    saveTimers();
+  }
+
+  const removeTimer = (i: number) => {
     timers.splice(i, 1);
     timers = timers;
     saveTimers();
@@ -77,11 +83,12 @@
 </header>
 
 <div class="countdown-flow">
-  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA.getTime() - dateB.getTime()) as { name, date }, i}
-  <div class="countdown">
-    <span class="title">{name}</span>
-    <Countdown date={date} showClock={showClock} index={i} on:done={e => removeTimer(e.detail)} /><br>
-  </div>
+  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA.getTime() - dateB.getTime()) as { name, date }, index}
+    <Countdown
+      {name} {date} {showClock} {index}
+      on:done={e => removeTimer(e.detail)}
+      on:update={e => updateTimer(e.detail)} 
+    />
   {/each}
 </div>
 
@@ -89,7 +96,7 @@
   @import '../_theme';
 
   :global(body) { background-color: $background--dark; }
-  :global(*) { color: $text--dark; }
+  :global(a), :global(input), :global(input::placeholder), :global(body) { color: $text--dark; }
 
   * {
     font-family: 'Inter', sans-serif;
@@ -113,19 +120,6 @@
     .countdown-flow { grid-template-columns: 1fr; }
   }
 
-  .countdown {
-    text-align: center;
-    padding: 1rem;
-    border: 2px solid $primary-hover;
-    border-radius: 1rem;
-    flex-grow: 1;
-    flex-basis: 0;
-    .title {
-      font-size: 2rem;
-      display: block;
-      margin-bottom: .5rem;
-    }
-  }
 
   header {
     display: flex;
@@ -186,7 +180,7 @@
 
   @media (prefers-color-scheme: light) {
     :global(body) { background-color: $background--light; }
-    :global(*) { color: $text--light; }
+    :global(a), :global(input), :global(input::placeholder), :global(body) { color: $text--light; }
     #Logo { filter: invert(100%); }
   }
 </style>
