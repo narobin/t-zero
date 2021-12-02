@@ -6,7 +6,7 @@
 
   interface Timer {
     name: string;
-    date: Date;
+    date: number;
   }
 
   let timers: Timer[] = [];
@@ -29,11 +29,11 @@
   };
 
   const saveTimers = () => {
-    localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date.getTime()}`).join(','))
+    localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date}`).join(','))
   }
 
   const addTimer = () => {
-    let timer = { name: newName, date: new Date(`${newDate}T${newTime}`) }
+    let timer = { name: newName, date: (new Date(`${newDate}T${newTime}`)).getTime() }
     timers.push(timer)
     timers = timers;
     
@@ -44,7 +44,7 @@
 
   const updateTimer = (i: number) => {
     timers[i].name = prompt('Enter new name') || timers[i].name;
-    timers[i].date = new Date(prompt('Enter new date') || timers[i].date);
+    timers[i].date = (new Date(prompt('Enter new date')).getTime() || timers[i].date);
     saveTimers();
   }
 
@@ -61,7 +61,7 @@
       .map(timer => {
         const [ name, millis ] = timer.split('=');
         // Error checking (both defined, types, etc.)
-        return { name, date: new Date(Number(millis)) };
+        return { name, date: Number(millis) };
       })
       .filter(val => val && val.name && val.date) || [];
   });
@@ -83,7 +83,7 @@
 </header>
 
 <div class="countdown-flow">
-  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA.getTime() - dateB.getTime()) as { name, date }, index}
+  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA - dateB) as { name, date }, index}
     <Countdown
       {name} {date} {showClock} {index}
       on:done={e => removeTimer(e.detail)}
@@ -108,6 +108,35 @@
     grid-gap: 1rem;
     /* align-items: stretch;
     flex-wrap: wrap; */
+  }
+
+  #Filter {
+    z-index: 98;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgba($color: #000000, $alpha: 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal {
+    z-index: 99;
+    position: absolute;
+    background-color: $background--dark;
+    margin: auto;
+    border-radius: 2rem;
+
+    &>* {
+      padding: 1rem;
+    }
+    
+    .title {
+      border-bottom: 1px solid $primary;
+    }
   }
 
   @media screen and (max-width: 1000px) {
@@ -182,5 +211,6 @@
     :global(body) { background-color: $background--light; }
     :global(a), :global(input), :global(input::placeholder), :global(body) { color: $text--light; }
     #Logo { filter: invert(100%); }
+    .modal { background-color: $background--light; }
   }
 </style>
