@@ -67,6 +67,16 @@
   });
 </script>
 
+<!-- <div id="Filter">
+  <div class="modal">
+    <div class="title">
+      Add Timer
+      <button></button>
+    </div>
+    <div class="body"></div>
+  </div>
+</div> -->
+
 <header>
   <img id="Logo" src="icon.svg" alt="T-0 Logo" />
   <span class="flex-grow"></span>
@@ -83,9 +93,9 @@
 </header>
 
 <div class="countdown-flow">
-  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA - dateB) as { name, date }, index}
+  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA - dateB) as timer, index (timer)}
     <Countdown
-      {name} {date} {showClock} {index}
+      name={timer.name} date={timer.date} {showClock} {index}
       on:done={e => removeTimer(e.detail)}
       on:update={e => updateTimer(e.detail)} 
     />
@@ -148,7 +158,6 @@
   @media screen and (max-width: 400px) {
     .countdown-flow { grid-template-columns: 1fr; }
   }
-
 
   header {
     display: flex;
