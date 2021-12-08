@@ -16,7 +16,7 @@
   const calcMillis = () => (new Date(date)).getTime() - Date.now();
 
   let millis = calcMillis();
-  let showCountdown = true;
+  let isComplete = true;
 
   const dispatch = createEventDispatcher();
   
@@ -28,8 +28,7 @@
   let interval = setInterval(() => {
     if (millis < 1e3) {
       clearInterval(interval);
-      showCountdown = false;
-      // setTimeout(() => dispatch('done', index), 3e3);
+      isComplete = false;
     }
     millis = calcMillis()
   }, 1e2);
@@ -37,12 +36,12 @@
 
 <div class="countdown">
   <span class="title">{name}</span>
-  {#if showCountdown}
+  {#if !isComplete}
   <div class="digit-flow">
     <div class="digit">
       <span class="title">Days</span> <span class="number">{days(millis)}</span>
     </div>
-    {#if showClock || millis < 863e5}
+    {#if showClock || millis < 3*863e5}
     <div class="digit">
       <span class="title">Hours</span> <span class="number">{hours(millis)}</span>
     </div>
