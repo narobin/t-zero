@@ -16,7 +16,7 @@
   const calcMillis = () => (new Date(date)).getTime() - Date.now();
 
   let millis = calcMillis();
-  let isComplete = true;
+  let isComplete = false;
 
   const dispatch = createEventDispatcher();
   
