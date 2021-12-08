@@ -95,7 +95,7 @@
       <input type="date" bind:value={newDate} />
       <input type="time" bind:value={newTime} />
       <span class="flex-grow"></span>
-      <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Edit' : 'Add'}</button>
+      <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
     </div>
   </div>
 </div>
