@@ -20,7 +20,9 @@
 
   const dispatch = createEventDispatcher();
   
-  const days = (ms) => (showClock || millis < 863e5 ? Math.floor : Math.ceil)(ms / 864e5);
+  const clockThreshold = 3*863e5;
+
+  const days = (ms) => (showClock || millis < clockThreshold ? Math.floor : Math.ceil)(ms / 864e5);
   const hours = (ms) => Math.floor(ms % 864e5 / 36e5);
   const minutes = (ms) => Math.floor((ms % 36e5) / 6e4);
   const seconds = (ms) => Math.floor(ms % 6e4 / 1e3);
@@ -41,7 +43,7 @@
     <div class="digit">
       <span class="title">Days</span> <span class="number">{days(millis)}</span>
     </div>
-    {#if showClock || millis < 3*863e5}
+    {#if showClock || millis < clockThreshold}
     <div class="digit">
       <span class="title">Hours</span> <span class="number">{hours(millis)}</span>
     </div>
