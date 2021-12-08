@@ -16,6 +16,7 @@
   let newName = '';
   let newDate = '';
   let newTime = '';
+  let editIndex = -1;
 
   const toggleClock = () => showClock = !showClock;
   const clearModal = () => {
@@ -23,16 +24,23 @@
     newDate = '';
     newTime = '';
   }
-  const toggleModal = () => {
+  const toggleModal = (state?: boolean) => {
     clearModal();
-    showModal = !showModal;
+    showModal = state || !showModal;
+    if (!state)
+      editIndex = -1;
   };
 
   const saveTimers = () => {
     localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date}`).join(','))
   }
 
-  const addTimer = (name: string, date: string, time: string) => {
+  const createTimer = (name: string, date: string, time: string) => {
+    if (editIndex > -1)
+      removeTimer(editIndex);
+
+    editIndex = -1;
+
     let timer = { name, date: (new Date(`${date}T${time}`)).getTime() }
     timers.push(timer)
     timers = timers;
@@ -42,10 +50,17 @@
     saveTimers();
   }
 
-  const updateTimer = (i: number) => {
-    timers[i].name = prompt('Enter new name') || timers[i].name;
-    timers[i].date = (new Date(prompt('Enter new date')).getTime() || timers[i].date);
-    saveTimers();
+  const starteditTimer = (i: number) => {
+    toggleModal(true);
+    const date = new Date(timers[i].date);
+    date.setHours(date.getHours() - date.getTimezoneOffset()/60);
+    const datetime = date.toISOString().split('T');
+    console.log(datetime);
+    
+    newName = timers[i].name;
+    newDate = datetime[0];
+    newTime = datetime[1].substring(0,5);
+    editIndex = i;
   }
 
   const removeTimer = (i: number) => {
@@ -71,17 +86,16 @@
 <div id="Filter">
   <div class="modal">
     <div class="header">
-      <span class="title">Add Timer</span>
+      <span class="title">{editIndex > -1 ? 'Edit' : 'Add'} Timer</span>
       <span class="flex-grow"></span>
-      <button on:click={toggleModal}>×</button>
+      <button on:click={() => toggleModal()}>×</button>
     </div>
     <div class="body">
-      <div id="add-timer">
-        <input type="text" placeholder="Name" bind:value={newName} />
-        <input type="date" bind:value={newDate} />
-        <input type="time" bind:value={newTime} />
-        <button type="button" on:click={addTimer}>Add</button>
-      </div>
+      <input type="text" placeholder="Name" bind:value={newName} />
+      <input type="date" bind:value={newDate} />
+      <input type="time" bind:value={newTime} />
+      <span class="flex-grow"></span>
+      <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Edit' : 'Add'}</button>
     </div>
   </div>
 </div>
@@ -91,7 +105,7 @@
   <img id="Logo" src="icon.svg" alt="T-0 Logo" />
   <span class="flex-grow"></span>
   <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button>
-  <button id="show-add" on:click={toggleModal}>+</button>
+  <button id="show-add" on:click={() => toggleModal()}>+</button>
 </header>
 
 <div class="countdown-flow">
@@ -99,7 +113,7 @@
     <Countdown
       name={timer.name} date={timer.date} {showClock} {index}
       on:done={e => removeTimer(e.detail)}
-      on:update={e => updateTimer(e.detail)} 
+      on:edit={e => starteditTimer(e.detail)} 
     />
   {/each}
 </div>
@@ -156,6 +170,10 @@
     .title {
       font-weight: bold;
     }
+
+    .body {
+      display: flex;
+    }
   }
 
   @media screen and (max-width: 1000px) {
@@ -179,7 +197,6 @@
 
   .flex-grow { flex-grow: 1; }
 
-  #add-timer { margin-left: 4ch; }
   #show-add { margin-left: 1ch; }
 
   button {
