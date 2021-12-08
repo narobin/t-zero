@@ -12,33 +12,33 @@
   let timers: Timer[] = [];
 
   let showClock = false;
-  let showAdd = false;
+  let showModal = false;
   let newName = '';
   let newDate = '';
   let newTime = '';
 
   const toggleClock = () => showClock = !showClock;
-  const clearAdd = () => {
+  const clearModal = () => {
     newName = '';
     newDate = '';
     newTime = '';
   }
-  const toggleAdd = () => {
-    clearAdd();
-    showAdd = !showAdd;
+  const toggleModal = () => {
+    clearModal();
+    showModal = !showModal;
   };
 
   const saveTimers = () => {
     localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date}`).join(','))
   }
 
-  const addTimer = () => {
-    let timer = { name: newName, date: (new Date(`${newDate}T${newTime}`)).getTime() }
+  const addTimer = (name: string, date: string, time: string) => {
+    let timer = { name, date: (new Date(`${date}T${time}`)).getTime() }
     timers.push(timer)
     timers = timers;
     
-    showAdd = false;
-    clearAdd();
+    showModal = false;
+    clearModal();
     saveTimers();
   }
 
@@ -67,29 +67,31 @@
   });
 </script>
 
-<!-- <div id="Filter">
+{#if showModal}
+<div id="Filter">
   <div class="modal">
-    <div class="title">
-      Add Timer
-      <button></button>
+    <div class="header">
+      <span class="title">Add Timer</span>
+      <span class="flex-grow"></span>
+      <button on:click={toggleModal}>×</button>
     </div>
-    <div class="body"></div>
+    <div class="body">
+      <div id="add-timer">
+        <input type="text" placeholder="Name" bind:value={newName} />
+        <input type="date" bind:value={newDate} />
+        <input type="time" bind:value={newTime} />
+        <button type="button" on:click={addTimer}>Add</button>
+      </div>
+    </div>
   </div>
-</div> -->
+</div>
+{/if}
 
 <header>
   <img id="Logo" src="icon.svg" alt="T-0 Logo" />
   <span class="flex-grow"></span>
   <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button>
-  {#if showAdd}
-  <div id="add-timer">
-    <input type="text" placeholder="Name" bind:value={newName} />
-    <input type="date" bind:value={newDate} />
-    <input type="time" bind:value={newTime} />
-    <button type="button" on:click={addTimer}>Add</button>
-  </div>
-  {/if}
-  <button id="show-add" on:click={toggleAdd}>{showAdd ? 'Cancel' : '+'}</button>
+  <button id="show-add" on:click={toggleModal}>+</button>
 </header>
 
 <div class="countdown-flow">
@@ -139,13 +141,20 @@
     background-color: $background--dark;
     margin: auto;
     border-radius: 2rem;
+    width: clamp(20vw, 70ch, 80vw);
 
     &>* {
       padding: 1rem;
     }
     
-    .title {
+    .header {
       border-bottom: 1px solid $primary;
+      display: flex;
+      align-items: center;
+    }
+
+    .title {
+      font-weight: bold;
     }
   }
 
