@@ -30,7 +30,7 @@
   let interval = setInterval(() => {
     if (millis < 1e3) {
       clearInterval(interval);
-      isComplete = false;
+      isComplete = true;
     }
     millis = calcMillis()
   }, 1e2);
