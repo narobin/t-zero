@@ -69,7 +69,7 @@
 </div>
 
 <style lang="scss">
-  @import '../_theme';
+  @import '../../_theme';
 
   .countdown {
     position: relative;

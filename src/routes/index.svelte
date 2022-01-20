@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Countdown from '../components/Countdown.svelte';
+  import Countdown from '$lib/components/Countdown.svelte';
   import { page } from '$app/stores'
   import { goto } from '$app/navigation';
   import { onMount, validate_each_argument } from 'svelte/internal';
@@ -101,39 +101,65 @@
 </div>
 {/if}
 
-<header>
-  <img id="Logo" src="icon.svg" alt="T-0 Logo" />
-  <span class="flex-grow"></span>
-  <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button>
-  <button id="show-add" on:click={() => toggleModal()}>+</button>
-</header>
+<main>
+  <header>
+    <img id="Logo" src="icon.svg" alt="T-0 Logo" />
+    <span class="flex-grow"></span>
+    <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button>
+    <button id="show-add" on:click={() => toggleModal()}>+</button>
+  </header>
+  
+  <div class="countdown-flow">
+    {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA - dateB) as timer, index (timer)}
+      <Countdown
+        name={timer.name} date={timer.date} {showClock} {index}
+        on:done={e => removeTimer(e.detail)}
+        on:edit={e => starteditTimer(e.detail)} 
+      />
+    {/each}
+  </div>
+</main>
 
-<div class="countdown-flow">
-  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA - dateB) as timer, index (timer)}
-    <Countdown
-      name={timer.name} date={timer.date} {showClock} {index}
-      on:done={e => removeTimer(e.detail)}
-      on:edit={e => starteditTimer(e.detail)} 
-    />
-  {/each}
-</div>
+<footer>
+  <center>
+    T-Zero™ by <a href="https://narobin.com" target="_blank">Noah Robinson</a>.
+    View code on <a href="https://github.com/nazrilof/t-zero" target="_blank">GitHub</a>.
+  </center>
+  <a href="mailto:contact@narobin.com" >Need Help?</a>
+</footer>
 
 <style lang="scss">
   @import '../_theme';
 
-  :global(body) { background-color: $background--dark; }
+  :global(body) { background-color: $background--dark; display: flex; flex-direction: column; margin: 0; }
   :global(a), :global(input), :global(input::placeholder), :global(body) { color: $text--dark; }
+  :global(body, html) { height: 100%; }
 
   * {
     font-family: 'Inter', sans-serif;
+  }
+
+  main {
+    flex-grow: 1;
+    padding: 1em;
+  }
+
+  footer {
+    padding: 1em;
+    display: flex;
+    center { flex-grow: 1; }
+  }
+
+  a {
+    text-decoration: none;
+    font-weight: bold;
+    &:hover { text-decoration: underline .12em; }
   }
 
   .countdown-flow {
     display: grid;
     grid: auto-flow / repeat(4, 1fr);
     grid-gap: 1rem;
-    /* align-items: stretch;
-    flex-wrap: wrap; */
   }
 
   #Filter {
