@@ -69,14 +69,12 @@
 </div>
 
 <style lang="scss">
-  @import '../../_theme';
-
   .countdown {
     position: relative;
     text-align: center;
     padding: 1rem;
     padding-bottom: 2rem;
-    border: 2px solid $primary-hover;
+    border: 2px solid $primary;
     border-radius: 1rem;
     flex-grow: 1;
     flex-basis: 0;
@@ -122,15 +120,15 @@
       display: grid;
       grid-template-columns: 6ch;
       grid-template-rows: repeat(2, 1fr);
-      border-left: 2px solid $primary-hover;
+      border-left: 2px solid $primary;
       background: $background--dark;
       border-radius: 0 1rem 1rem 0;
       button {
         background: transparent;
         cursor: pointer;
         border: none;
-        color: $primary-hover;
-        &:hover { color: $primary; }
+        color: $primary;
+        &:hover { color: $primary-hover; }
       }
     }
     .buttons { display: none; }

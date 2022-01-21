@@ -1,5 +1,6 @@
 <script lang="ts">
   import Countdown from '$lib/components/Countdown.svelte';
+  import Selector from '$lib/components/Selector.svelte';
   import { page } from '$app/stores'
   import { goto } from '$app/navigation';
   import { onMount, validate_each_argument } from 'svelte/internal';
@@ -107,6 +108,7 @@
     <span class="flex-grow"></span>
     <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button>
     <button id="show-add" on:click={() => toggleModal()}>+</button>
+    <Selector />
   </header>
   
   <div class="countdown-flow">
@@ -129,12 +131,6 @@
 </footer>
 
 <style lang="scss">
-  @import '../_theme';
-
-  :global(body) { background-color: $background--dark; display: flex; flex-direction: column; margin: 0; }
-  :global(a), :global(input), :global(input::placeholder), :global(body) { color: $text--dark; }
-  :global(body, html) { height: 100%; }
-
   * {
     font-family: 'Inter', sans-serif;
   }
@@ -227,8 +223,8 @@
 
   button {
     outline: none;
-    border: 2px solid $primary-hover;
-    color: $primary-hover;
+    border: 2px solid $primary;
+    color: $primary;
     font-weight: bold;
     background: transparent;
     border-radius: 1000rem;
@@ -237,6 +233,7 @@
   button:hover {
     color: white;
     background: $primary-hover;
+    border-color: $primary-hover;
     cursor: pointer;
   }
 
@@ -248,6 +245,8 @@
     background: transparent;
     border-radius: 1000rem;
     padding: .5rem .8rem;
+
+    & + input { margin-left: .5ch; }
 
     &::placeholder {
       // color: $text;
