@@ -1,9 +1,6 @@
 <script lang="ts">
   import Countdown from '$lib/components/Countdown.svelte';
-  import Selector from '$lib/components/Selector.svelte';
-  import { page } from '$app/stores'
-  import { goto } from '$app/navigation';
-  import { onMount, validate_each_argument } from 'svelte/internal';
+  import { onMount } from 'svelte/internal';
 
   interface Timer {
     name: string;
@@ -18,7 +15,6 @@
   let newDate = '';
   let newTime = '';
   let editIndex = -1;
-
   const toggleClock = () => showClock = !showClock;
   const clearModal = () => {
     newName = '';
@@ -81,6 +77,8 @@
       })
       .filter(val => val && val.name && val.date) || [];
   });
+
+  let test = 'Lorem';
 </script>
 
 {#if showModal}
@@ -106,9 +104,23 @@
   <header>
     <img id="Logo" src="icon.svg" alt="T-0 Logo" />
     <span class="flex-grow"></span>
-    <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button>
-    <button id="show-add" on:click={() => toggleModal()}>+</button>
-    <Selector />
+
+    <div class="radio-group">
+      <input type="radio" bind:group={showClock} name="showClock" id="showClockFalse" value={false}>
+      <label for="showClockFalse">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      </label>
+      
+      <input type="radio" bind:group={showClock} name="showClock" id="showClockTrue" value={true}>
+      <label for="showClockTrue">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </label>
+    </div>
+
+    <!-- <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button> -->
+    <button id="show-add" on:click={() => toggleModal()}>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    </button>
   </header>
   
   <div class="countdown-flow">
@@ -198,6 +210,19 @@
     }
   }
 
+  header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  header img { height: 3rem; }
+
+  .flex-grow { flex-grow: 1; }
+
+  #show-add { margin-left: 1ch; }
+
   @media screen and (max-width: 1000px) {
     .countdown-flow { grid-template-columns: repeat(3, 1fr); }
   }
@@ -207,69 +232,8 @@
   @media screen and (max-width: 400px) {
     .countdown-flow { grid-template-columns: 1fr; }
   }
-
-  header {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    padding: 1rem 0;
-  }
-
-  header img { height: 3rem; }
-
-  .flex-grow { flex-grow: 1; }
-
-  #show-add { margin-left: 1ch; }
-
-  button {
-    outline: none;
-    border: 2px solid $primary;
-    color: $primary;
-    font-weight: bold;
-    background: transparent;
-    border-radius: 1000rem;
-    padding: .5rem .8rem;
-  }
-  button:hover {
-    color: white;
-    background: $primary-hover;
-    border-color: $primary-hover;
-    cursor: pointer;
-  }
-
-  input {
-    outline: none;
-    border: 2px solid $primary;
-    // color: $text;
-    font-weight: bold;
-    background: transparent;
-    border-radius: 1000rem;
-    padding: .5rem .8rem;
-
-    & + input { margin-left: .5ch; }
-
-    &::placeholder {
-      // color: $text;
-      opacity: 1;
-    }
-
-    &:hover {
-      background: $primary-hover;
-      border-color: $primary-hover;
-      cursor: pointer;
-    }
-    
-    &:focus {
-      background: $primary;
-      border-color: $primary;
-      // color: $text;
-      &::placeholder { opacity: 0.8; }
-    }
-  }
-
+  
   @media (prefers-color-scheme: light) {
-    :global(body) { background-color: $background--light; }
-    :global(a), :global(input), :global(input::placeholder), :global(body) { color: $text--light; }
     #Logo { filter: invert(100%); }
     .modal { background-color: $background--light; }
   }

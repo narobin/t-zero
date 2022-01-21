@@ -125,10 +125,12 @@
       border-radius: 0 1rem 1rem 0;
       button {
         background: transparent;
+        display: block;
         cursor: pointer;
         border: none;
         color: $primary;
         &:hover { color: $primary-hover; }
+        svg { height: 100%; }
       }
     }
     .buttons { display: none; }

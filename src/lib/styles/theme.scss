@@ -21,3 +21,94 @@ $text--light: #151313;
 }
 
 :global(body, a, input, input::placeholder) { color: $text--dark; }
+
+@mixin svg {
+  display: flex;
+  align-items: center;
+  svg { height: 1.3em; }
+}
+
+button {
+  outline: none;
+  border: 2px solid $primary;
+  color: $primary;
+  font-weight: bold;
+  background: transparent;
+  border-radius: 1000rem;
+  padding: .5rem .8rem;
+  &:hover {
+    color: white;
+    background: $primary;
+    cursor: pointer;
+  }
+  &:active {
+    background: $primary-hover;
+    border-color: $primary-hover;
+  }
+  @include svg();
+}
+
+input {
+  outline: none;
+  border: 2px solid $primary;
+  font-weight: bold;
+  background: transparent;
+  border-radius: 1000rem;
+  padding: .5rem .8rem;
+  & + input { margin-left: .5ch; }
+  &::placeholder {
+    // color: $text;
+    opacity: 1;
+  }
+  &:hover {
+    background: $primary-hover;
+    border-color: $primary-hover;
+    cursor: pointer;
+  }
+  &:focus {
+    background: $primary;
+    border-color: $primary;
+    &::placeholder { opacity: 0.8; }
+  }
+  @include svg();
+}
+
+.radio-group {
+  padding: .2rem;
+  border-radius: 100ch;
+  display: flex;
+
+  &:hover {
+    background: lighten($background--dark, 10%);
+  }
+  
+  input { visibility: hidden; position: fixed; }
+  input:checked + label { color: $primary; }
+
+  label {
+    padding: .5rem .8rem;
+    border-radius: 100ch;
+    margin: 0;
+    cursor: pointer;
+    &:hover { background: lighten($background--dark, 20%); }
+    @include svg();
+  }
+  label ~ label { margin-left: .2rem; }
+}
+.radio-group + .radio-group, button + .radio-group, input + .radio-group { margin-left: 1rem; }
+
+@mixin lightTheme {
+  :global(body) { background-color: $background--light; }
+  a, input, input::placeholder, :global(body) { color: $text--light; }
+  .radio-group:hover { background: darken($background--light, 10%); }
+  .radio-group>label:hover { background: darken($background--light, 20%); }
+  .radio-group>label:hover { background: darken($background--light, 20%); }
+}
+
+@media (prefers-color-scheme: light) {
+  @include lightTheme();
+}
+
+.theme-light {
+  @include lightTheme();
+}
