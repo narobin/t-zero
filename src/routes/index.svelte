@@ -15,6 +15,7 @@
   let newDate = '';
   let newTime = '';
   let editIndex = -1;
+  
   const toggleClock = () => showClock = !showClock;
   const clearModal = () => {
     newName = '';
@@ -94,11 +95,28 @@
       <input type="date" bind:value={newDate} />
       <input type="time" bind:value={newTime} />
       <span class="flex-grow"></span>
-      <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
+      <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Edit' : 'Add'}</button>
     </div>
   </div>
 </div>
 {/if}
+
+<header>
+  <img id="Logo" src="icon.svg" alt="T-0 Logo" />
+  <span class="flex-grow"></span>
+  <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button>
+  <button id="show-add" on:click={() => toggleModal()}>+</button>
+</header>
+
+<div class="countdown-flow">
+  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA - dateB) as timer, index (timer)}
+    <Countdown
+      name={timer.name} date={timer.date} {showClock} {index}
+      on:done={e => removeTimer(e.detail)}
+      on:edit={e => starteditTimer(e.detail)} 
+    />
+  {/each}
+</div>
 
 <main>
   <header>
@@ -199,6 +217,14 @@
       border-bottom: 1px solid $primary;
       display: flex;
       align-items: center;
+    }
+
+    .title {
+      font-weight: bold;
+    }
+
+    .body {
+      display: flex;
     }
 
     .title {
