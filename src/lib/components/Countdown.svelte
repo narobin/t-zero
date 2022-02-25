@@ -6,13 +6,6 @@
   export let index: number;
   export let name: string;
   
-  interface TimeRemaining {
-    days: number;
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-  }
-  
   const calcMillis = () => (new Date(date)).getTime() - Date.now();
 
   let millis = calcMillis();
@@ -24,7 +17,7 @@
 
   const days = (ms) => (showClock || millis < clockThreshold ? Math.floor : Math.ceil)(ms / 864e5);
   const hours = (ms) => Math.floor(ms % 864e5 / 36e5);
-  const minutes = (ms) => Math.floor((ms % 36e5) / 6e4);
+  const minutes = (ms) => Math.floor(ms % 36e5 / 6e4);
   const seconds = (ms) => Math.floor(ms % 6e4 / 1e3);
 
   let interval = setInterval(() => {
@@ -82,6 +75,7 @@
     .title {
       font-size: 2rem;
       display: block;
+      font-weight: bold;
       margin-bottom: .5rem;
     }
 
@@ -116,11 +110,7 @@
       position: absolute;
       top: .5rem;
       right: .5rem;
-      // height: 100%;
       display: flex;
-      // grid-template-columns: 6ch;
-      // grid-template-rows: repeat(2, 1fr);
-      // border-left: 2px solid $primary;
       background: $primary;
       border-radius: 1rem;
       height: 1rem;
@@ -132,7 +122,6 @@
         border: none;
         padding: 0;
         @include theme-text();
-        // &:hover { color: $primary-hover; }
         svg { height: 100%; }
       }
       button ~ button { margin-left: 0.25rem; }

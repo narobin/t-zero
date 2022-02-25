@@ -58,13 +58,22 @@ button {
     border-color: $primary-hover;
     cursor: pointer;
   }
+  &.transparent {
+    background: none;
+    &:hover { background: none; }
+    border: none;
+  }
+
   @include svg();
 }
 
 a {
   text-decoration: none;
   font-weight: bold;
-  &:hover { text-decoration: underline .12em; }
+  &:hover {
+    text-decoration: underline .12em; 
+    cursor: pointer;
+  }
 }
 
 input {

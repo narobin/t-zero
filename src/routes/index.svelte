@@ -2,6 +2,7 @@
   import Countdown from '$lib/components/Countdown.svelte';
   import Footer from '$lib/components/Footer.svelte';
   import { onMount } from 'svelte/internal';
+  import { TimeRemaining } from '$lib/models/TimeRemaining';
 
   interface Timer {
     name: string;
@@ -12,22 +13,56 @@
 
   let showClock = false;
   let showModal = false;
-  let newName = '';
-  let newDate = '';
-  let newTime = '';
+  let editingName = '';
+  let editingDate = '';
+  let editingTime = '';
   let editIndex = -1;
 
+  let editingRemaining: TimeRemaining = {
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  };
+
+  const updateEditingRemaining = () => {
+    const ms = (new Date(`${editingDate}T${editingTime}`)).getTime() - Date.now();
+    
+    editingRemaining = {
+      days: Math.floor(ms / 864e5),
+      hours: Math.floor(ms % 864e5 / 36e5),
+      minutes: Math.floor(ms % 36e5 / 6e4),
+      seconds: Math.floor(ms % 6e4 / 1e3),
+    };
+  };
+  setInterval(updateEditingRemaining, 1e3);
+
   const clearModal = () => {
-    newName = '';
-    newDate = '';
-    newTime = '';
+    editingName = '';
+    editingDate = '';
+    editingTime = '';
   }
-  const toggleModal = (state?: boolean) => {
+  const toggleModal = (state?: boolean, i = -1) => {
     clearModal();
+
+    if (i > -1) {
+      const date = new Date(timers[i].date);
+      date.setHours(date.getHours() - date.getTimezoneOffset()/60);
+      const datetime = date.toISOString().split('T');
+      
+      editingName = timers[i].name;
+      editingDate = datetime[0];
+      editingTime = datetime[1].substring(0,5);
+      editIndex = i;
+    }
+    
     showModal = state || !showModal;
     if (!state)
       editIndex = -1;
+
+    updateEditingRemaining();
   };
+
 
   const saveTimers = () => {
     localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date}`).join(','))
@@ -48,17 +83,9 @@
     saveTimers();
   }
 
-  const starteditTimer = (i: number) => {
+  const startEditTimer = (i: number) => {
     toggleModal(true);
-    const date = new Date(timers[i].date);
-    date.setHours(date.getHours() - date.getTimezoneOffset()/60);
-    const datetime = date.toISOString().split('T');
-    console.log(datetime);
-    
-    newName = timers[i].name;
-    newDate = datetime[0];
-    newTime = datetime[1].substring(0,5);
-    editIndex = i;
+
   }
 
   const removeTimer = (i: number) => {
@@ -87,15 +114,19 @@
   <div class="modal">
     <div class="header">
       <span class="title">{editIndex > -1 ? 'Edit' : 'Add'} Timer</span>
-      <span class="flex-grow"></span>
-      <button on:click={() => toggleModal()}>×</button>
     </div>
     <div class="body">
-      <input type="text" placeholder="Name" bind:value={newName} />
-      <input type="date" bind:value={newDate} />
-      <input type="time" bind:value={newTime} />
+      <input type="text" placeholder="Name" bind:value={editingName} />
+      <input type="date" bind:value={editingDate} />
+      <input type="time" bind:value={editingTime} />
+    </div>
+    <div class="footer">
+      {#if editingRemaining.days}
+        <span><b>{editingRemaining.days}</b> days <b>{editingRemaining.hours}</b> hours <b>{editingRemaining.minutes}</b> minutes <b>{editingRemaining.seconds}</b> seconds from now</span>
+      {/if}
       <span class="flex-grow"></span>
-      <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
+      <button class="transparent" on:click={() => toggleModal()}>Cancel</button>
+      <button on:click={() => createTimer(editingName, editingDate, editingTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
     </div>
   </div>
 </div>
@@ -129,7 +160,7 @@
       <Countdown
         name={timer.name} date={timer.date} {showClock} {index}
         on:done={e => removeTimer(e.detail)}
-        on:edit={e => starteditTimer(e.detail)} 
+        on:edit={e => toggleModal(true, e.detail)} 
       />
     {/each}
   </div>
@@ -180,31 +211,21 @@
     margin: auto;
     border-radius: 2rem;
     width: clamp(20vw, 70ch, 80vw);
-
-    &>* {
-      padding: 1rem;
-    }
+    padding: 1rem;
     
     .header {
-      border-bottom: 1px solid $primary;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+    }
+
+    .title { font-weight: bold; }
+
+    .body { display: flex; }
+
+    .footer {
+      margin-top: 1rem;
       display: flex;
       align-items: center;
-    }
-
-    .title {
-      font-weight: bold;
-    }
-
-    .body {
-      display: flex;
-    }
-
-    .title {
-      font-weight: bold;
-    }
-
-    .body {
-      display: flex;
     }
   }
 
