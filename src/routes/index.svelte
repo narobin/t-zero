@@ -1,5 +1,6 @@
 <script lang="ts">
   import Countdown from '$lib/components/Countdown.svelte';
+  import Footer from '$lib/components/Footer.svelte';
   import { onMount } from 'svelte/internal';
 
   interface Timer {
@@ -15,8 +16,7 @@
   let newDate = '';
   let newTime = '';
   let editIndex = -1;
-  
-  const toggleClock = () => showClock = !showClock;
+
   const clearModal = () => {
     newName = '';
     newDate = '';
@@ -95,28 +95,11 @@
       <input type="date" bind:value={newDate} />
       <input type="time" bind:value={newTime} />
       <span class="flex-grow"></span>
-      <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Edit' : 'Add'}</button>
+      <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
     </div>
   </div>
 </div>
 {/if}
-
-<header>
-  <img id="Logo" src="icon.svg" alt="T-0 Logo" />
-  <span class="flex-grow"></span>
-  <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button>
-  <button id="show-add" on:click={() => toggleModal()}>+</button>
-</header>
-
-<div class="countdown-flow">
-  {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA - dateB) as timer, index (timer)}
-    <Countdown
-      name={timer.name} date={timer.date} {showClock} {index}
-      on:done={e => removeTimer(e.detail)}
-      on:edit={e => starteditTimer(e.detail)} 
-    />
-  {/each}
-</div>
 
 <main>
   <header>
@@ -152,34 +135,16 @@
   </div>
 </main>
 
-<footer>
-  <center>
-    T-Zero™ by <a href="https://narobin.com" target="_blank">Noah Robinson</a>.
-    View code on <a href="https://github.com/nazrilof/t-zero" target="_blank">GitHub</a>.
-  </center>
-  <a href="mailto:contact@narobin.com" >Need Help?</a>
-</footer>
+<Footer />
+
+<button id="Help">
+  <a href="mailto:contact@narobin.com">Need Help?</a>
+</button>
 
 <style lang="scss">
-  * {
-    font-family: 'Inter', sans-serif;
-  }
-
   main {
     flex-grow: 1;
-    padding: 1em;
-  }
-
-  footer {
-    padding: 1em;
-    display: flex;
-    center { flex-grow: 1; }
-  }
-
-  a {
-    text-decoration: none;
-    font-weight: bold;
-    &:hover { text-decoration: underline .12em; }
+    padding: 1rem;
   }
 
   .countdown-flow {
@@ -199,6 +164,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+
+  #Help {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    a:hover { text-decoration: none; }
   }
 
   .modal {
