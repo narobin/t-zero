@@ -114,24 +114,28 @@
 
     &:hover .buttons {
       position: absolute;
-      top: 0;
-      right: 0;
-      height: 100%;
-      display: grid;
-      grid-template-columns: 6ch;
-      grid-template-rows: repeat(2, 1fr);
-      border-left: 2px solid $primary;
-      background: $background--dark;
-      border-radius: 0 1rem 1rem 0;
+      top: .5rem;
+      right: .5rem;
+      // height: 100%;
+      display: flex;
+      // grid-template-columns: 6ch;
+      // grid-template-rows: repeat(2, 1fr);
+      // border-left: 2px solid $primary;
+      background: $primary;
+      border-radius: 1rem;
+      height: 1rem;
+      padding: 0.5rem;
       button {
         background: transparent;
         display: block;
         cursor: pointer;
         border: none;
-        color: $primary;
-        &:hover { color: $primary-hover; }
+        padding: 0;
+        @include theme-text();
+        // &:hover { color: $primary-hover; }
         svg { height: 100%; }
       }
+      button ~ button { margin-left: 0.25rem; }
     }
     .buttons { display: none; }
   }

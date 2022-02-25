@@ -28,22 +28,34 @@ $text--light: #151313;
   svg { height: 1.3em; }
 }
 
+@mixin theme-text($hover: none) {
+  color: $text--dark;
+  @media (prefers-color-scheme: light) {
+    color: $text--light;
+  }
+
+  @if hover != none {
+    &:hover {
+      color: darken($text--dark, 10%);
+      @media (prefers-color-scheme: light) {
+        color: lighten($text--light, 10%);
+      }
+    }
+  }
+}
+
 button {
   outline: none;
   border: 2px solid $primary;
-  color: $primary;
+  @include theme-text();
   font-weight: bold;
-  background: transparent;
+  background: $primary;
   border-radius: 1000rem;
   padding: .5rem .8rem;
   &:hover {
-    color: white;
-    background: $primary;
-    cursor: pointer;
-  }
-  &:active {
     background: $primary-hover;
     border-color: $primary-hover;
+    cursor: pointer;
   }
   @include svg();
 }
@@ -103,6 +115,7 @@ input {
   .radio-group:hover { background: darken($background--light, 10%); }
   .radio-group>label:hover { background: darken($background--light, 20%); }
   .radio-group>label:hover { background: darken($background--light, 20%); }
+  button { color: $text--light; }
 }
 
 @media (prefers-color-scheme: light) {
