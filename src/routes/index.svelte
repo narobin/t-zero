@@ -2,11 +2,6 @@
   import Countdown from '$lib/components/Countdown.svelte';
   import { onMount } from 'svelte/internal';
 
-  interface Timer {
-    name: string;
-    date: number;
-  }
-
   let timers: Timer[] = [];
 
   let showClock = false;
@@ -66,6 +61,26 @@
     saveTimers();
   };
 
+  interface TimeLeft {
+    days: number;
+    hours: number;
+    minutes: number;
+    seconds: number;
+  }
+
+  const timeLeft = (date: Date): TimeLeft => {
+    const ms = date.getTime() - Date.now();
+
+    return {
+      days: Math.floor(ms / 864e5),
+      hours: Math.floor(ms % 864e5 / 36e5),
+      minutes: Math.floor((ms % 36e5) / 6e4),
+      seconds: Math.floor(ms % 6e4 / 1e3),
+    }
+  }
+
+  // const timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)) () => timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`));
+
   onMount(() => {
     timers = localStorage.getItem('timers')
       ?.split(',')
@@ -77,8 +92,6 @@
       })
       .filter(val => val && val.name && val.date) || [];
   });
-
-  let test = 'Lorem';
 </script>
 
 {#if showModal}
@@ -93,6 +106,13 @@
       <input type="text" placeholder="Name" bind:value={newName} />
       <input type="date" bind:value={newDate} />
       <input type="time" bind:value={newTime} />
+    </div>
+    <div class="actions">
+      {#if timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).days}
+        <span><b>{timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).days}</b> days <b>{timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).hours}</b> hours <b>{timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).minutes}</b> minutes <b>{timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).seconds}</b> seconds</span>
+      {:else}
+        <span>Please enter a date</span>
+      {/if}
       <span class="flex-grow"></span>
       <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
     </div>
@@ -205,8 +225,9 @@
       font-weight: bold;
     }
 
-    .body {
+    .body, .actions {
       display: flex;
+      align-items: baseline;
     }
   }
 
