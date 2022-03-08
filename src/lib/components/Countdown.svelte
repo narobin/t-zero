@@ -92,7 +92,7 @@
    
       .title {
         font-size: .8rem;
-        color: lighten($text--light, 50%);
+        color: lighten($text-light-theme, 60%);
       }
       .number {
         font-weight: bold;
@@ -130,6 +130,6 @@
   }
 
   @media (prefers-color-scheme: light) {
-    .buttons { background: $background--light; }
+    .buttons { background: $background-light-theme; }
   }
 </style>

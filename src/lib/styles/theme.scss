@@ -2,11 +2,11 @@ $primary: #00A6FB;
 $primary-hover: #0582CA;
 $secondary: #011936;
 
-$background--dark: #2e3233;
-$text--dark: #F5F5F4;
+$background-dark-theme: #1d1f20;
+$text-dark-theme: #F5F5F4;
 
-$background--light: #F5F5F4;
-$text--light: #151313;
+$background-light-theme: #F5F5F4;
+$text-light-theme: #151313;
 
 :global(html) {
   height: 100%;
@@ -14,14 +14,14 @@ $text--light: #151313;
 
 :global(body) {
   height: 100%;
-  background-color: $background--dark;
+  background-color: $background-dark-theme;
   display: flex; 
   flex-direction: column;
   margin: 0;
   * { font-family: 'Inter', sans-serif; }
 }
 
-:global(body, a, input, input::placeholder) { color: $text--dark; }
+:global(body, a, input, input::placeholder) { color: $text-dark-theme; }
 
 @mixin svg {
   display: flex;
@@ -30,16 +30,16 @@ $text--light: #151313;
 }
 
 @mixin theme-text($hover: none) {
-  color: $text--dark;
+  color: $text-dark-theme;
   @media (prefers-color-scheme: light) {
-    color: $text--light;
+    color: $text-light-theme;
   }
 
   @if hover != none {
     &:hover {
-      color: darken($text--dark, 10%);
+      color: darken($text-dark-theme, 10%);
       @media (prefers-color-scheme: light) {
-        color: lighten($text--light, 10%);
+        color: lighten($text-light-theme, 10%);
       }
     }
   }
@@ -48,7 +48,7 @@ $text--light: #151313;
 button {
   outline: none;
   border: 2px solid $primary;
-  @include theme-text();
+  color: $text-dark-theme;
   font-weight: bold;
   background: $primary;
   border-radius: 1000rem;
@@ -62,7 +62,9 @@ button {
     background: none;
     &:hover { background: none; }
     border: none;
+    @include theme-text();
   }
+  a { color: $text-dark-theme; }
 
   @include svg();
 }
@@ -91,11 +93,14 @@ input {
     background: $primary-hover;
     border-color: $primary-hover;
     cursor: pointer;
+    color: $text-dark-theme;
+    &::placeholder { color: $text-dark-theme; }
   }
   &:focus {
     background: $primary;
     border-color: $primary;
-    &::placeholder { opacity: 0.8; }
+    color: $text-dark-theme;
+    &::placeholder { opacity: 0.8; color: $text-dark-theme; }
   }
   @include svg();
 }
@@ -106,7 +111,7 @@ input {
   display: flex;
 
   &:hover {
-    background: lighten($background--dark, 10%);
+    background: lighten($background-dark-theme, 10%);
   }
   
   input { visibility: hidden; position: fixed; }
@@ -117,7 +122,7 @@ input {
     border-radius: 100ch;
     margin: 0;
     cursor: pointer;
-    &:hover { background: lighten($background--dark, 20%); }
+    &:hover { background: lighten($background-dark-theme, 20%); }
     @include svg();
   }
   label ~ label { margin-left: .2rem; }
@@ -125,11 +130,11 @@ input {
 .radio-group + .radio-group, button + .radio-group, input + .radio-group { margin-left: 1rem; }
 
 @mixin lightTheme {
-  :global(body) { background-color: $background--light; }
-  a, input, input::placeholder, :global(body) { color: $text--light; }
-  .radio-group:hover { background: darken($background--light, 10%); }
-  .radio-group>label:hover { background: darken($background--light, 20%); }
-  .radio-group>label:hover { background: darken($background--light, 20%); }
+  :global(body) { background-color: $background-light-theme; }
+  a, input, input::placeholder, :global(body) { color: $text-light-theme; }
+  .radio-group:hover { background: darken($background-light-theme, 10%); }
+  .radio-group>label:hover { background: darken($background-light-theme, 20%); }
+  .radio-group>label:hover { background: darken($background-light-theme, 20%); }
 }
 
 @media (prefers-color-scheme: light) {
