@@ -1,8 +1,8 @@
 <script lang="ts">
   import Countdown from '$lib/components/Countdown.svelte';
-  import Footer from '$lib/components/Footer.svelte';
+  import Help from '$lib/components/Help.svelte';
   import { onMount } from 'svelte/internal';
-  import { TimeRemaining } from '$lib/models/TimeRemaining';
+  import type { TimeRemaining } from '$lib/models/TimeRemaining';
 
   interface Timer {
     name: string;
@@ -165,11 +165,7 @@
   </div>
 </main>
 
-<Footer />
-
-<button id="Help">
-  <a href="mailto:contact@narobin.com">Need Help?</a>
-</button>
+<Help />
 
 <style lang="scss">
   main {
@@ -194,13 +190,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-
-  #Help {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    a:hover { text-decoration: none; }
   }
 
   .modal {
