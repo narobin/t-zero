@@ -6,13 +6,6 @@
   export let index: number;
   export let name: string;
   
-  interface TimeRemaining {
-    days: number;
-    hours?: number;
-    minutes?: number;
-    seconds?: number;
-  }
-  
   const calcMillis = () => (new Date(date)).getTime() - Date.now();
 
   let millis = calcMillis();
@@ -24,7 +17,7 @@
 
   const days = (ms) => (showClock || millis < clockThreshold ? Math.floor : Math.ceil)(ms / 864e5);
   const hours = (ms) => Math.floor(ms % 864e5 / 36e5);
-  const minutes = (ms) => Math.floor((ms % 36e5) / 6e4);
+  const minutes = (ms) => Math.floor(ms % 36e5 / 6e4);
   const seconds = (ms) => Math.floor(ms % 6e4 / 1e3);
 
   let interval = setInterval(() => {
@@ -82,6 +75,7 @@
     .title {
       font-size: 2rem;
       display: block;
+      font-weight: bold;
       margin-bottom: .5rem;
     }
 
@@ -98,7 +92,7 @@
    
       .title {
         font-size: .8rem;
-        color: lighten($text--light, 50%);
+        color: lighten($text-light-theme, 60%);
       }
       .number {
         font-weight: bold;
@@ -114,29 +108,28 @@
 
     &:hover .buttons {
       position: absolute;
-      top: 0;
-      right: 0;
-      height: 100%;
-      display: grid;
-      grid-template-columns: 6ch;
-      grid-template-rows: repeat(2, 1fr);
-      border-left: 2px solid $primary;
-      background: $background--dark;
-      border-radius: 0 1rem 1rem 0;
+      top: .5rem;
+      right: .5rem;
+      display: flex;
+      background: $primary;
+      border-radius: 1rem;
+      height: 1rem;
+      padding: 0.5rem;
       button {
         background: transparent;
         display: block;
         cursor: pointer;
         border: none;
-        color: $primary;
-        &:hover { color: $primary-hover; }
+        padding: 0;
+        @include theme-text();
         svg { height: 100%; }
       }
+      button ~ button { margin-left: 0.25rem; }
     }
     .buttons { display: none; }
   }
 
   @media (prefers-color-scheme: light) {
-    .buttons { background: $background--light; }
+    .buttons { background: $background-light-theme; }
   }
 </style>

@@ -1,29 +1,71 @@
 <script lang="ts">
-  import Countdown from '$lib/components/Countdown.svelte';
-  import { onMount } from 'svelte/internal';
   import type { Timer } from '$lib/models/Timer';
+  import type { TimeRemaining } from '$lib/models/TimeRemaining';
+
+  import Countdown from '$lib/components/Countdown.svelte';
+  import Help from '$lib/components/Help.svelte';
+  import { onMount } from 'svelte/internal';
   import { timers as test } from '$lib/stores/timers';
   
+  interface Timer {
+    name: string;
+    date: number;
+  }
+
   let timers: Timer[] = [];
 
   let showClock = false;
   let showModal = false;
-  let newName = '';
-  let newDate = '';
-  let newTime = '';
+  let editingName = '';
+  let editingDate = '';
+  let editingTime = '';
   let editIndex = -1;
-  const toggleClock = () => showClock = !showClock;
+
+  let editingRemaining: TimeRemaining = {
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  };
+
+  const updateEditingRemaining = () => {
+    const ms = (new Date(`${editingDate}T${editingTime}`)).getTime() - Date.now();
+    
+    editingRemaining = {
+      days: Math.floor(ms / 864e5),
+      hours: Math.floor(ms % 864e5 / 36e5),
+      minutes: Math.floor(ms % 36e5 / 6e4),
+      seconds: Math.floor(ms % 6e4 / 1e3),
+    };
+  };
+  setInterval(updateEditingRemaining, 1e3);
+
   const clearModal = () => {
-    newName = '';
-    newDate = '';
-    newTime = '';
+    editingName = '';
+    editingDate = '';
+    editingTime = '';
   }
-  const toggleModal = (state?: boolean) => {
+  const toggleModal = (state?: boolean, i = -1) => {
     clearModal();
+
+    if (i > -1) {
+      const date = new Date(timers[i].date);
+      date.setHours(date.getHours() - date.getTimezoneOffset()/60);
+      const datetime = date.toISOString().split('T');
+      
+      editingName = timers[i].name;
+      editingDate = datetime[0];
+      editingTime = datetime[1].substring(0,5);
+      editIndex = i;
+    }
+    
     showModal = state || !showModal;
     if (!state)
       editIndex = -1;
+
+    updateEditingRemaining();
   };
+
 
   const saveTimers = () => {
     localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date}`).join(','))
@@ -44,17 +86,9 @@
     saveTimers();
   }
 
-  const starteditTimer = (i: number) => {
+  const startEditTimer = (i: number) => {
     toggleModal(true);
-    const date = new Date(timers[i].date);
-    date.setHours(date.getHours() - date.getTimezoneOffset()/60);
-    const datetime = date.toISOString().split('T');
-    console.log(datetime);
-    
-    newName = timers[i].name;
-    newDate = datetime[0];
-    newTime = datetime[1].substring(0,5);
-    editIndex = i;
+
   }
 
   const removeTimer = (i: number) => {
@@ -101,22 +135,19 @@
   <div class="modal">
     <div class="header">
       <span class="title">{editIndex > -1 ? 'Edit' : 'Add'} Timer</span>
-      <span class="flex-grow"></span>
-      <button on:click={() => toggleModal()}>×</button>
     </div>
     <div class="body">
-      <input type="text" placeholder="Name" bind:value={newName} />
-      <input type="date" bind:value={newDate} />
-      <input type="time" bind:value={newTime} />
+      <input type="text" placeholder="Name" bind:value={editingName} />
+      <input type="date" bind:value={editingDate} />
+      <input type="time" bind:value={editingTime} />
     </div>
-    <div class="actions">
-      {#if timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).days}
-        <span><b>{timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).days}</b> days <b>{timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).hours}</b> hours <b>{timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).minutes}</b> minutes <b>{timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)).seconds}</b> seconds</span>
-      {:else}
-        <span>Please enter a date</span>
+    <div class="footer">
+      {#if editingRemaining.days}
+        <span><b>{editingRemaining.days}</b> days <b>{editingRemaining.hours}</b> hours <b>{editingRemaining.minutes}</b> minutes <b>{editingRemaining.seconds}</b> seconds from now</span>
       {/if}
       <span class="flex-grow"></span>
-      <button type="button" on:click={() => createTimer(newName, newDate, newTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
+      <button class="transparent" on:click={() => toggleModal()}>Cancel</button>
+      <button on:click={() => createTimer(editingName, editingDate, editingTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
     </div>
   </div>
 </div>
@@ -139,9 +170,8 @@
       </label>
     </div>
 
-    <!-- <button id="show-clock" on:click={toggleClock}>{showClock ? 'Hide' : 'Show'} Clock</button> -->
     <button id="show-add" on:click={() => toggleModal()}>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </button>
   </header>
   
@@ -150,40 +180,18 @@
       <Countdown
         name={timer.name} date={timer.date} {showClock} {index}
         on:done={e => removeTimer(e.detail)}
-        on:edit={e => starteditTimer(e.detail)} 
+        on:edit={e => toggleModal(true, e.detail)} 
       />
     {/each}
   </div>
 </main>
 
-<footer>
-  <center>
-    T-Zero™ by <a href="https://narobin.com" target="_blank">Noah Robinson</a>.
-    View code on <a href="https://github.com/nazrilof/t-zero" target="_blank">GitHub</a>.
-  </center>
-  <a href="mailto:contact@narobin.com" >Need Help?</a>
-</footer>
+<Help />
 
 <style lang="scss">
-  * {
-    font-family: 'Inter', sans-serif;
-  }
-
   main {
     flex-grow: 1;
-    padding: 1em;
-  }
-
-  footer {
-    padding: 1em;
-    display: flex;
-    center { flex-grow: 1; }
-  }
-
-  a {
-    text-decoration: none;
-    font-weight: bold;
-    &:hover { text-decoration: underline .12em; }
+    padding: 1rem;
   }
 
   .countdown-flow {
@@ -208,28 +216,25 @@
   .modal {
     z-index: 99;
     position: absolute;
-    background-color: $background--dark;
+    background-color: $background-dark-theme;
     margin: auto;
     border-radius: 2rem;
     width: clamp(20vw, 70ch, 80vw);
-
-    &>* {
-      padding: 1rem;
-    }
+    padding: 1rem;
     
     .header {
-      border-bottom: 1px solid $primary;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+    }
+
+    .title { font-weight: bold; }
+
+    .body { display: flex; }
+
+    .footer {
+      margin-top: 1rem;
       display: flex;
       align-items: center;
-    }
-
-    .title {
-      font-weight: bold;
-    }
-
-    .body, .actions {
-      display: flex;
-      align-items: baseline;
     }
   }
 
@@ -258,6 +263,6 @@
   
   @media (prefers-color-scheme: light) {
     #Logo { filter: invert(100%); }
-    .modal { background-color: $background--light; }
+    .modal { background-color: $background-light-theme; }
   }
 </style>
