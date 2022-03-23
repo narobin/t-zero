@@ -6,11 +6,6 @@
   import Help from '$lib/components/Help.svelte';
   import { onMount } from 'svelte/internal';
   import { timers as test } from '$lib/stores/timers';
-  
-  interface Timer {
-    name: string;
-    date: number;
-  }
 
   let timers: Timer[] = [];
 
