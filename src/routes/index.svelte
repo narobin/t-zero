@@ -1,7 +1,11 @@
 <script lang="ts">
   import Countdown from '$lib/components/Countdown.svelte';
   import { onMount } from 'svelte/internal';
+  import type { Timer } from '$lib/models/Timer';
+  import { timers as test } from '$lib/stores/timers';
 
+  test.subscribe(console.log);
+  
   let timers: Timer[] = [];
 
   let showClock = false;

@@ -1,12 +1,18 @@
 import { writable } from "svelte/store";
 import type { Timer } from "$lib/models/Timer";
+import { browser } from "$app/env";
+
+// const initialValue: Timer[] = JSON.parse(window.localStorage.getItem('timers'));
+const defaultValue = [];
+const initialValue = browser ? JSON.parse(window.localStorage.getItem('theme')) ?? defaultValue : defaultValue;
 
 const createTimers = () => {
-  const timers: Timer[] = JSON.parse(localStorage.getItem('timers'));
+  const { subscribe, set, update } = writable(initialValue.map(({name, date}) => ({ name: name, date: date, remaining: date - Date.now()})));
 
-  const timersRemaining = timers.map(timer => timer.date -= Date.now());
-
-  const { subscribe, set, update } = writable(timersRemaining);
+  setInterval(() => update(timers => {
+    timers.forEach(({ date, remaining }) => remaining = date - Date.now())
+    return timers;
+  }), 1e3);
 
   return {
     subscribe,
