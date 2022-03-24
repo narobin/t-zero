@@ -5,6 +5,10 @@ import { browser } from "$app/env";
 const defaultValue = [];
 const initialValue: Timer[] = browser ? JSON.parse(localStorage.getItem('timers')) ?? defaultValue : defaultValue;
 
+// TODO: Create custom store
+// TODO: Function to subscribe to specific timer
+// TODO: Implement timer IDs
+
 export const timers = writable(initialValue.map(({name, date}) => ({ name: name, date: date, remaining: date - Date.now()})));
 
 setInterval(() => timers.update(timers => {

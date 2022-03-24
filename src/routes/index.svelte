@@ -4,147 +4,41 @@
 
   import Countdown from '$lib/components/Countdown.svelte';
   import Help from '$lib/components/Help.svelte';
+  import TimerEditMenu from '$lib/components/TimerEditMenu.svelte';
   import { onMount } from 'svelte/internal';
-  import { timers as test } from '$lib/stores/timers';
+  import { timers } from '$lib/stores/timers';
 
-  let timers: Timer[] = [];
-
+  let timersValue = [];
   let showClock = false;
-  let showModal = false;
-  let editingName = '';
-  let editingDate = '';
-  let editingTime = '';
-  let editIndex = -1;
 
-  let editingRemaining: TimeRemaining = {
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  };
-
-  const updateEditingRemaining = () => {
-    const ms = (new Date(`${editingDate}T${editingTime}`)).getTime() - Date.now();
-    
-    editingRemaining = {
-      days: Math.floor(ms / 864e5),
-      hours: Math.floor(ms % 864e5 / 36e5),
-      minutes: Math.floor(ms % 36e5 / 6e4),
-      seconds: Math.floor(ms % 6e4 / 1e3),
-    };
-  };
-  setInterval(updateEditingRemaining, 1e3);
-
-  const clearModal = () => {
-    editingName = '';
-    editingDate = '';
-    editingTime = '';
-  }
-  const toggleModal = (state?: boolean, i = -1) => {
-    clearModal();
-
-    if (i > -1) {
-      const date = new Date(timers[i].date);
-      date.setHours(date.getHours() - date.getTimezoneOffset()/60);
-      const datetime = date.toISOString().split('T');
-      
-      editingName = timers[i].name;
-      editingDate = datetime[0];
-      editingTime = datetime[1].substring(0,5);
-      editIndex = i;
-    }
-    
-    showModal = state || !showModal;
-    if (!state)
-      editIndex = -1;
-
-    updateEditingRemaining();
-  };
-
-
-  const saveTimers = () => {
-    localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date}`).join(','))
+  enum ModalMode {
+    Off,
+    Edit,
   }
 
-  const createTimer = (name: string, date: string, time: string) => {
-    if (editIndex > -1)
-      removeTimer(editIndex);
+  let modalMode = ModalMode.Off;
+  let modalEditingID: string = null;
 
-    editIndex = -1;
-
-    let timer = { name, date: (new Date(`${date}T${time}`)).getTime() }
-    timers.push(timer)
-    timers = timers;
-    
-    showModal = false;
-    clearModal();
-    saveTimers();
+  const openEditModal = (id: string = null) => {
+    modalEditingID = id;
+    modalMode = ModalMode.Edit;
   }
 
-  const startEditTimer = (i: number) => {
-    toggleModal(true);
-
+  const closeEditModal = (id: string) => {
+    modalMode = ModalMode.Off;
+    modalEditingID = null;
   }
-
-  const removeTimer = (i: number) => {
-    timers.splice(i, 1);
-    timers = timers;
-    saveTimers();
-  };
-
-  interface TimeLeft {
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-  }
-
-  const timeLeft = (date: Date): TimeLeft => {
-    const ms = date.getTime() - Date.now();
-
-    return {
-      days: Math.floor(ms / 864e5),
-      hours: Math.floor(ms % 864e5 / 36e5),
-      minutes: Math.floor((ms % 36e5) / 6e4),
-      seconds: Math.floor(ms % 6e4 / 1e3),
-    }
-  }
-
-  // const timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`)) () => timeLeft(new Date(`${newDate}T${newTime||'00:00:00'}`));
 
   onMount(() => {
-    timers = localStorage.getItem('timers')
-      ?.split(',')
-      .filter(a => a)
-      .map(timer => {
-        const [ name, millis ] = timer.split('=');
-        // Error checking (both defined, types, etc.)
-        return { name, date: Number(millis) };
-      })
-      .filter(val => val && val.name && val.date) || [];
+    timers.subscribe(timers => timersValue = timers || []);
   });
 </script>
 
-{#if showModal}
+{#if modalMode !== ModalMode.Off}
 <div id="Filter">
-  <div class="modal">
-    <div class="header">
-      <span class="title">{editIndex > -1 ? 'Edit' : 'Add'} Timer</span>
-    </div>
-    <div class="body">
-      <input type="text" placeholder="Name" bind:value={editingName} />
-      <input type="date" bind:value={editingDate} />
-      <input type="time" bind:value={editingTime} />
-    </div>
-    <div class="footer">
-      {#if editingRemaining.days}
-        <span><b>{editingRemaining.days}</b> days <b>{editingRemaining.hours}</b> hours <b>{editingRemaining.minutes}</b> minutes <b>{editingRemaining.seconds}</b> seconds from now</span>
-      {/if}
-      <span class="flex-grow"></span>
-      <button class="transparent" on:click={() => toggleModal()}>Cancel</button>
-      <button on:click={() => createTimer(editingName, editingDate, editingTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
-    </div>
-  </div>
+  {#if modalMode === ModalMode.Edit }
+    <TimerEditMenu />
+  {/if}
 </div>
 {/if}
 
@@ -165,18 +59,14 @@
       </label>
     </div>
 
-    <button id="show-add" on:click={() => toggleModal()}>
+    <button id="show-add" on:click={() => openEditModal()}>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
     </button>
   </header>
   
   <div class="countdown-flow">
-    {#each timers.sort(({ date: dateA }, { date: dateB }) => dateA - dateB) as timer, index (timer)}
-      <Countdown
-        name={timer.name} date={timer.date} {showClock} {index}
-        on:done={e => removeTimer(e.detail)}
-        on:edit={e => toggleModal(true, e.detail)} 
-      />
+    {#each timersValue as timer, index (timer)}
+      <Countdown name={timer.name} date={timer.date} {showClock} {index} />
     {/each}
   </div>
 </main>
@@ -206,31 +96,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-
-  .modal {
-    z-index: 99;
-    position: absolute;
-    background-color: $background-dark-theme;
-    margin: auto;
-    border-radius: 2rem;
-    width: clamp(20vw, 70ch, 80vw);
-    padding: 1rem;
-    
-    .header {
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-    }
-
-    .title { font-weight: bold; }
-
-    .body { display: flex; }
-
-    .footer {
-      margin-top: 1rem;
-      display: flex;
-      align-items: center;
-    }
   }
 
   header {
