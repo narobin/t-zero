@@ -1,5 +1,6 @@
+import type { LiveTimer, Timer } from "$lib/models/Timer";
+
 import { writable } from "svelte/store";
-import type { Timer } from "$lib/models/Timer";
 import { browser } from "$app/env";
 
 const defaultValue = [];
@@ -9,7 +10,7 @@ const initialValue: Timer[] = browser ? JSON.parse(localStorage.getItem('timers'
 // TODO: Function to subscribe to specific timer
 // TODO: Implement timer IDs
 
-export const timers = writable(initialValue.map(({name, date}) => ({ name: name, date: date, remaining: date - Date.now()})));
+export const timers = writable<LiveTimer[]>(initialValue.map(({name, date}) => ({ name: name, date: date, remaining: date - Date.now()})));
 
 setInterval(() => timers.update(timers => {
   timers.forEach(({ date, remaining }) => remaining = date - Date.now())

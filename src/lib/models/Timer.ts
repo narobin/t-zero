@@ -6,5 +6,5 @@ export interface Timer {
 }
 
 export interface LiveTimer extends Timer {
-
+  remaining: number;
 }
