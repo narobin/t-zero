@@ -24,7 +24,7 @@
     modalMode = ModalMode.Edit;
   }
 
-  const closeEditModal = (id: string) => {
+  const closeEditModal = () => {
     modalMode = ModalMode.Off;
     modalEditingID = null;
   }
@@ -37,7 +37,7 @@
 {#if modalMode !== ModalMode.Off}
 <div id="Filter">
   {#if modalMode === ModalMode.Edit }
-    <TimerEditMenu />
+    <TimerEditMenu on:close={() => closeEditModal()} />
   {/if}
 </div>
 {/if}
@@ -65,8 +65,14 @@
   </header>
   
   <div class="countdown-flow">
-    {#each timersValue as timer, index (timer)}
-      <Countdown name={timer.name} date={timer.date} {showClock} {index} />
+    {#each timersValue.sort((a, b) => a.date - b.date) as timer, index (timer)}
+      <Countdown 
+        name={timer.name} 
+        date={timer.date} 
+        {showClock}
+        {index}
+        on:edit={id => openEditModal(id)}
+      />
     {/each}
   </div>
 </main>

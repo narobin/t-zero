@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { timers } from "$lib/stores/timers";
+
   import { onMount } from "svelte";
   import { createEventDispatcher } from 'svelte';
 
@@ -17,10 +19,21 @@
   const closeMenu = () => dispatch('close');
 
   // TODO: Implement create timer method
-  const createTimer = (a, b, c) => {}
+  const saveTimer = (id, name, date, time) => {
+    timers.add({
+      name,
+      date: new Date(`${date}T${time}Z`).getTime()
+    });
+    closeMenu();
+  }
 
   onMount(() => {
-    // TODO: Subscribe to timer to be edited if editingID is defined
+    if (editingID)
+      timers.subscribeTimer(editingID, timer => {
+        editingName = timer.name;
+        editingDate = new Date(timer.date).toISOString().split('T')[0];
+        editingTime = new Date(timer.date).toISOString().split('T')[1];
+      });
   })
 </script>
 
@@ -42,7 +55,7 @@
     {/if}
     <span class="flex-grow"></span>
     <button class="transparent" on:click={() => closeMenu()}>Cancel</button>
-    <button on:click={() => createTimer(editingName, editingDate, editingTime)}>{editingID ? 'Save' : 'Add'}</button>
+    <button on:click={() => saveTimer(editingID, editingName, editingDate, editingTime)}>{editingID ? 'Save' : 'Add'}</button>
   </div>
 </div>
 

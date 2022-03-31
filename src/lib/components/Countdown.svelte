@@ -6,6 +6,8 @@
   export let index: number;
   export let name: string;
   
+  // TODO: Change over to use of subscribe and remaining
+  
   const calcMillis = () => (new Date(date)).getTime() - Date.now();
 
   let millis = calcMillis();
