@@ -17,16 +17,16 @@
   }
 
   let modalMode = ModalMode.Off;
-  let modalEditingID: string = null;
+  let editingID: string = null;
 
   const openEditModal = (id: string = null) => {
-    modalEditingID = id;
+    editingID = id;
     modalMode = ModalMode.Edit;
   }
 
   const closeEditModal = () => {
     modalMode = ModalMode.Off;
-    modalEditingID = null;
+    editingID = null;
   }
 
   onMount(() => {
@@ -37,7 +37,7 @@
 {#if modalMode !== ModalMode.Off}
 <div id="Filter">
   {#if modalMode === ModalMode.Edit }
-    <TimerEditMenu on:close={() => closeEditModal()} />
+    <TimerEditMenu on:close={() => closeEditModal()} {editingID} />
   {/if}
 </div>
 {/if}
@@ -64,17 +64,24 @@
     </button>
   </header>
   
+  {#if timersValue?.length}
   <div class="countdown-flow">
     {#each timersValue.sort((a, b) => a.date - b.date) as timer, index (timer)}
       <Countdown 
         name={timer.name} 
-        date={timer.date} 
+        date={timer.date}
+        id={timer.id}
         {showClock}
-        {index}
-        on:edit={id => openEditModal(id)}
+        on:edit={e => openEditModal(e.detail)}
       />
     {/each}
   </div>
+  {:else}
+    <div class="timers-hint">
+      <h2>Try Creating a Timer</h2>
+      <p>Press the plus button to get started</p>
+    </div>
+  {/if}
 </main>
 
 <Help />
@@ -89,6 +96,12 @@
     display: grid;
     grid: auto-flow / repeat(4, 1fr);
     grid-gap: 1rem;
+  }
+
+  .timers-hint {
+    opacity: 0.3;
+    text-align: center;
+    h2 { padding-top: 5rem; }
   }
 
   #Filter {

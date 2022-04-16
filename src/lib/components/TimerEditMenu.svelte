@@ -3,6 +3,7 @@
 
   import { onMount } from "svelte";
   import { createEventDispatcher } from 'svelte';
+import { is_client } from "svelte/internal";
 
   export let editingID: string = null;
 
@@ -20,24 +21,29 @@
 
   // TODO: Implement create timer method
   const saveTimer = (id, name, date, time) => {
-    timers.add({
+    const newTimer = {
       name,
-      date: new Date(`${date}T${time}Z`).getTime()
-    });
+      date: new Date(`${date}T${time}`).getTime()
+    }
+
+    if (id)
+      timers.update(id, newTimer);
+    else
+      timers.add(newTimer);
+    
     closeMenu();
   }
 
   onMount(() => {
-    if (editingID)
-      timers.subscribeTimer(editingID, timer => {
-        editingName = timer.name;
-        editingDate = new Date(timer.date).toISOString().split('T')[0];
-        editingTime = new Date(timer.date).toISOString().split('T')[1];
-      });
+    if (editingID) {
+      const timer = timers.getTimer(editingID);
+      
+      editingName = timer.name;
+      [editingDate, editingTime] = new Date(timer.date - new Date().getTimezoneOffset() * 60000)
+        .toISOString().substring(0,16).split('T');
+    }
   })
 </script>
-
-{editingID}
 
 <div class="modal">
   <div class="header">

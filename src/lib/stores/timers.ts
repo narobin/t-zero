@@ -1,6 +1,6 @@
 import { LiveTimer, NewTimer, Timer, TimerValidationErrors } from "$lib/models/Timer";
 
-import { Subscriber, writable } from "svelte/store";
+import { Subscriber, writable, get } from "svelte/store";
 import { browser } from "$app/env";
 
 const defaultValue = [];
@@ -10,7 +10,7 @@ const initialValue: Timer[] = browser ? JSON.parse(localStorage.getItem('timers'
 // TODO: Function to subscribe to specific timer
 // TODO: Implement timer IDs
 
-export const { subscribe, update, set } = writable<LiveTimer[]>(initialValue.map(({name, date}) => ({ name: name, date: date, remaining: date - Date.now()})));
+export const { subscribe, update, set } = writable<LiveTimer[]>(initialValue.map(({name, date, id}, index) => ({ name: name, date, remaining: date - Date.now(), id: index.toString()})));
 
 setInterval(() => update(timers => {
   timers.forEach(({ date, remaining }) => remaining = date - Date.now())
@@ -44,6 +44,7 @@ export const timers = {
   subscribeTimer: (id: string, run: Subscriber<LiveTimer>) => {
     subscribe(timers => run(timers.find(timer => timer.id === id)))
   },
+  getTimer: (id: string) => get(timers).find(timer => timer.id === id),
   update: (id: string, value: NewTimer): TimerValidationErrors => {
     const errors = validate(value);
   
@@ -66,6 +67,7 @@ export const timers = {
       update(timers => {
         timers.push({
           remaining: 0,
+          id: timers.length.toString(),
           ...value
         })
         return timers;
@@ -75,6 +77,11 @@ export const timers = {
   },
   // TODO: Implement remove function
   remove: (id: string) => {
-
+    update(timers => {
+      const deleteIndex = timers.findIndex(timer => id == timer.id);
+      if (deleteIndex > -1)
+        timers.splice(deleteIndex, 1);
+      return timers;
+    })
   }
 }
