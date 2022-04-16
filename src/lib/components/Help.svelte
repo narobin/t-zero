@@ -25,7 +25,7 @@
     {:else}
     <span class="help-tip">Copied Link!</span>
     {/if}
-    <button class="transparent-hover" on:click={() => openLink('https://narobin.com')}>
+    <button class="transparent-hover" on:click={() => openLink('https://notapplicablerobin.com')}>
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>About the Creator</span>
     </button>
     <button class="transparent-hover" on:click={() => openLink('https://github.com/Nazrilof/t-zero')}>
@@ -63,6 +63,7 @@
     border: 2px solid $primary;
     padding: .7rem;
     @include theme-background();
+    @include theme-text();
     &:hover { background-color: $primary-hover; }
   }
 
