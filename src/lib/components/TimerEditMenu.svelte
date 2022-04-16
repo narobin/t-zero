@@ -69,7 +69,7 @@ import { is_client } from "svelte/internal";
   .modal {
     z-index: 99;
     position: absolute;
-    background-color: $background-dark-theme;
+    @include theme-background();
     margin: auto;
     border-radius: 2rem;
     width: clamp(20vw, 70ch, 80vw);
