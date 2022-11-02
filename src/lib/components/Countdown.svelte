@@ -1,32 +1,24 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import { time } from '$lib/stores/time';
 
   export let showClock = false;
   export let date: number;
   export let index: number;
   export let name: string;
-  
-  const calcMillis = () => (new Date(date)).getTime() - Date.now();
 
-  let millis = calcMillis();
-  let isComplete = false;
+  $: dateMillis = (new Date(date)).getTime()
+  $: millis = dateMillis - $time;
+  $: isComplete = millis < 0;
 
   const dispatch = createEventDispatcher();
   
   const clockThreshold = 3*863e5;
 
-  const days = (ms) => (showClock || millis < clockThreshold ? Math.floor : Math.ceil)(ms / 864e5);
-  const hours = (ms) => Math.floor(ms % 864e5 / 36e5);
-  const minutes = (ms) => Math.floor(ms % 36e5 / 6e4);
-  const seconds = (ms) => Math.floor(ms % 6e4 / 1e3);
-
-  let interval = setInterval(() => {
-    if (millis < 1e3) {
-      clearInterval(interval);
-      isComplete = true;
-    }
-    millis = calcMillis()
-  }, 1e2);
+  $: days = (showClock || millis < clockThreshold ? Math.floor : Math.ceil)(millis / 864e5);
+  $: hours = Math.floor(millis % 864e5 / 36e5);
+  $: minutes = Math.floor(millis % 36e5 / 6e4);
+  $: seconds = Math.floor(millis % 6e4 / 1e3);
 </script>
 
 <div class="countdown">
@@ -34,17 +26,17 @@
   {#if !isComplete}
   <div class="digit-flow">
     <div class="digit">
-      <span class="title">Days</span> <span class="number">{days(millis)}</span>
+      <span class="title">Days</span> <span class="number">{days}</span>
     </div>
     {#if showClock || millis < clockThreshold}
     <div class="digit">
-      <span class="title">Hours</span> <span class="number">{hours(millis)}</span>
+      <span class="title">Hours</span> <span class="number">{hours}</span>
     </div>
     <div class="digit">
-      <span class="title">Minutes</span> <span class="number">{minutes(millis)}</span>
+      <span class="title">Minutes</span> <span class="number">{minutes}</span>
     </div>
     <div class="digit">
-      <span class="title">Seconds</span> <span class="number">{seconds(millis)}</span>
+      <span class="title">Seconds</span> <span class="number">{seconds}</span>
     </div>
     {/if}
   </div>

@@ -17,6 +17,18 @@
   let editingDate = '';
   let editingTime = '';
   let editIndex = -1;
+  let editError = '';
+
+  $: {
+    if (!editingName)
+      editError = 'You must specify a name';
+    else if (!editingDate)
+      editError = 'You must specify a date';
+    else if (!editingTime)
+      editError = 'You must specify a time';
+    else
+      editError = '';
+  }
 
   let editingRemaining: TimeRemaining = {
     days: 0,
@@ -63,7 +75,6 @@
     updateEditingRemaining();
   };
 
-
   const saveTimers = () => {
     localStorage.setItem('timers', timers.map(({ name, date }) => `${name}=${date}`).join(','))
   }
@@ -85,7 +96,6 @@
 
   const startEditTimer = (i: number) => {
     toggleModal(true);
-
   }
 
   const removeTimer = (i: number) => {
@@ -121,12 +131,17 @@
       <input type="time" bind:value={editingTime} />
     </div>
     <div class="footer">
-      {#if editingRemaining.days}
+      {#if editError}
+        <span class="error">{ editError }</span>
+      {:else if editingRemaining.days}
         <span><b>{editingRemaining.days}</b> days <b>{editingRemaining.hours}</b> hours <b>{editingRemaining.minutes}</b> minutes <b>{editingRemaining.seconds}</b> seconds from now</span>
       {/if}
       <span class="flex-grow"></span>
       <button class="transparent" on:click={() => toggleModal()}>Cancel</button>
-      <button on:click={() => createTimer(editingName, editingDate, editingTime)}>{editIndex > -1 ? 'Save' : 'Add'}</button>
+      <button 
+        on:click={() => createTimer(editingName, editingDate, editingTime)}
+        disabled={Boolean(editError)}
+      >{editIndex > -1 ? 'Save' : 'Add'}</button>
     </div>
   </div>
 </div>

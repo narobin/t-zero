@@ -2,6 +2,8 @@ $primary: #00A6FB;
 $primary-hover: #0582CA;
 $secondary: #011936;
 
+$error: #f05d5d;
+
 $background-dark-theme: #1d1f20;
 $text-dark-theme: #F5F5F4;
 
@@ -33,6 +35,13 @@ $text-light-theme: #151313;
   color: $text-dark-theme;
   @media (prefers-color-scheme: light) {
     color: $text-light-theme;
+  }
+}
+
+@mixin theme-text-hover() {
+  color: darken($text-dark-theme, 10%);
+  @media (prefers-color-scheme: light) {
+    color: lighten($text-light-theme, 10%);
   }
 }
 
@@ -74,9 +83,17 @@ button {
     border-color: $primary-hover;
     cursor: pointer;
   }
+  &:disabled {
+    background: darken($primary, 20%);
+    border-color: darken($primary, 20%);
+    @include theme-text-hover();
+  }
   &.transparent {
     background: none;
-    &:hover { background: none; }
+    &:hover {
+      background: none;
+      @include theme-text-hover();
+    }
     border: none;
     @include theme-text();
   }
@@ -165,4 +182,8 @@ input {
 
 .theme-light {
   @include lightTheme();
+}
+
+.error {
+  color: $error;
 }
