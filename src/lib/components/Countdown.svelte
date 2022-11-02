@@ -30,7 +30,7 @@
 </script>
 
 <div class="countdown">
-  <span class="title">{name}</span>
+  <div class="title">{name}</div>
   {#if !isComplete}
   <div class="digit-flow">
     <div class="digit">
@@ -71,12 +71,15 @@
     border-radius: 1rem;
     flex-grow: 1;
     flex-basis: 0;
+    display: flex;
+    flex-direction: column;
 
     .title {
       font-size: 2rem;
       display: block;
       font-weight: bold;
       margin-bottom: .5rem;
+      flex-grow: 1;
     }
 
     .complete {
