@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { time } from '$lib/stores/time';
+  import { floorMultiple } from '$lib/helpers/roundMultiple';
 
   export let showClock = false;
   export let date: number;
@@ -15,7 +16,11 @@
   
   const clockThreshold = 3*863e5;
 
-  $: days = (showClock || millis < clockThreshold ? Math.floor : Math.ceil)(millis / 864e5);
+  $: daysApprox = (floorMultiple(dateMillis, 864e5) - floorMultiple($time, 864e5)) / 864e5;
+
+  console.debug(floorMultiple(dateMillis, 864e5));
+
+  $: days = Math.floor(millis / 864e5);
   $: hours = Math.floor(millis % 864e5 / 36e5);
   $: minutes = Math.floor(millis % 36e5 / 6e4);
   $: seconds = Math.floor(millis % 6e4 / 1e3);
@@ -25,10 +30,10 @@
   <div class="title">{name}</div>
   {#if !isComplete}
   <div class="digit-flow">
+    {#if showClock || millis < clockThreshold}
     <div class="digit">
       <span class="title">Days</span> <span class="number">{days}</span>
     </div>
-    {#if showClock || millis < clockThreshold}
     <div class="digit">
       <span class="title">Hours</span> <span class="number">{hours}</span>
     </div>
@@ -38,6 +43,10 @@
     <div class="digit">
       <span class="title">Seconds</span> <span class="number">{seconds}</span>
     </div>
+    {:else}
+      <div class="digit">
+        <span class="title">Days</span> <span class="number">{daysApprox}</span>
+      </div>
     {/if}
   </div>
   {:else}
