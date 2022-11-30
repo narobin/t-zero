@@ -8,7 +8,7 @@
   export let index: number;
   export let name: string;
 
-  $: dateMillis = (new Date(date)).getTime()
+  $: dateMillis = (new Date(date)).getTime();
   $: millis = dateMillis - $time;
   $: isComplete = millis < 0;
 
@@ -16,9 +16,9 @@
   
   const clockThreshold = 3*863e5;
 
-  $: daysApprox = (floorMultiple(dateMillis, 864e5) - floorMultiple($time, 864e5)) / 864e5;
+  const timezoneOffset = (new Date().getTimezoneOffset())*6e4;
 
-  console.debug(floorMultiple(dateMillis, 864e5));
+  $: daysApprox = Math.floor((dateMillis - timezoneOffset)/864e5) - Math.floor(($time - timezoneOffset)/864e5);
 
   $: days = Math.floor(millis / 864e5);
   $: hours = Math.floor(millis % 864e5 / 36e5);
