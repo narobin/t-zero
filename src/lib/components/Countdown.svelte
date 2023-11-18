@@ -1,9 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { time } from '$lib/stores/time';
-  import { floorMultiple } from '$lib/helpers/roundMultiple';
 
-  export let showClock = false;
   export let date: number;
   export let index: number;
   export let name: string;
@@ -13,12 +11,6 @@
   $: isComplete = millis < 0;
 
   const dispatch = createEventDispatcher();
-  
-  const clockThreshold = 3*863e5;
-
-  const timezoneOffset = (new Date().getTimezoneOffset())*6e4;
-
-  $: daysApprox = Math.floor((dateMillis - timezoneOffset)/864e5) - Math.floor(($time - timezoneOffset)/864e5);
 
   $: days = Math.floor(millis / 864e5);
   $: hours = Math.floor(millis % 864e5 / 36e5);
@@ -30,7 +22,6 @@
   <div class="title">{name}</div>
   {#if !isComplete}
   <div class="digit-flow">
-    {#if showClock || millis < clockThreshold}
     <div class="digit">
       <span class="title">Days</span> <span class="number">{days}</span>
     </div>
@@ -43,14 +34,22 @@
     <div class="digit">
       <span class="title">Seconds</span> <span class="number">{seconds}</span>
     </div>
-    {:else}
-      <div class="digit">
-        <span class="title">Days</span> <span class="number">{daysApprox}</span>
-      </div>
-    {/if}
   </div>
   {:else}
-  <span class="complete">Complete</span>
+  <div class="digit-flow">
+    <div class="digit">
+      <span class="title">Days</span> <span class="number">0</span>
+    </div>
+    <div class="digit">
+      <span class="title">Hours</span> <span class="number">0</span>
+    </div>
+    <div class="digit">
+      <span class="title">Minutes</span> <span class="number">0</span>
+    </div>
+    <div class="digit">
+      <span class="title">Seconds</span> <span class="number">0</span>
+    </div>
+  </div>
   {/if}
   <div class="buttons">
     <button on:click={() => dispatch('edit', index)}>
@@ -65,15 +64,13 @@
 <style lang="scss">
   .countdown {
     position: relative;
-    text-align: center;
-    padding: 1rem;
-    padding-bottom: 2rem;
-    border: 2px solid $primary;
+    padding: 3rem 2rem;
     border-radius: 1rem;
     flex-grow: 1;
     flex-basis: 0;
     display: flex;
-    flex-direction: column;
+    background: linear-gradient(30deg, $primary, darken($primary, 20%));
+    align-items: center;
 
     .title {
       font-size: 2rem;
@@ -93,10 +90,10 @@
     .digit {
       display: flex;
       flex-direction: column;
+      text-align: center;
    
       .title {
         font-size: .8rem;
-        color: lighten($text-light-theme, 60%);
       }
       .number {
         font-weight: bold;
@@ -135,5 +132,6 @@
 
   @media (prefers-color-scheme: light) {
     .buttons { background: $background-light-theme; }
+    .countdown { color: $text-dark-theme; }
   }
 </style>
