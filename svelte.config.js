@@ -15,6 +15,9 @@ const config = {
 			platformProxy: {
 				persist: true,
 			},
+			pages: 'build',
+			assets: 'build',
+			fallback: null,
 		})
 	}
 };
