@@ -16,7 +16,6 @@ const config = {
 				persist: true,
 			},
 		}),
-		outDir: "./build/"
 	}
 };
 
