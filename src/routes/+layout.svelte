@@ -101,12 +101,12 @@
       color: $bg-color;
       display: flex;
       gap: 0.5rem;
+      align-items: baseline;
       h1 {
         flex-grow: 1;
         margin: 0;
         padding: 0;
       }
-      align-items: baseline;
     }
 
     main {
