@@ -15,7 +15,8 @@ const config = {
 			platformProxy: {
 				persist: true,
 			},
-		})
+		}),
+		outDir: "./build/"
 	}
 };
 
