@@ -14,7 +14,10 @@ const config = {
 		adapter: adapter({
 			platformProxy: {
 				persist: true,
-			}
+			},
+			pages: 'build',
+			assets: 'build',
+			fallback: null,
 		})
 	}
 };
