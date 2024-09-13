@@ -1,14 +1,6 @@
 import type {RequestHandler} from "@sveltejs/kit";
 
-export const POST = (async ({ platform }) => {
-    try {
-
-    } catch (e) {
-        return new Response("Error", {
-            status: 500
-        });
-    }
-
+export const POST = (async () => {
     return new Response();
 }) satisfies RequestHandler;
 
