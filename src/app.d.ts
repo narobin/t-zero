@@ -3,7 +3,9 @@
 declare global {
 	namespace App {
         interface Platform {
-            env: Env
+            env: {
+                tzero: KVNamespace
+            }
             cf: CfProperties
             ctx: ExecutionContext
         }
