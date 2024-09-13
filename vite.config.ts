@@ -6,10 +6,13 @@ export default defineConfig({
 	css: {
 		preprocessorOptions: {
 			scss: {
-				additionalData: `
+				xadditionalData: `
 				  @use '$lib/styles/theme' as *;
 				`,
 			}
 		},
+	},
+	build: {
+		outDir: 'build',
 	}
 });
