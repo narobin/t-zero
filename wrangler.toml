@@ -3,10 +3,10 @@ name = "t-zero"
 compatibility_date = "2024-09-09"
 pages_build_output_dir = ".svelte-kit/cloudflare"
 
-[[env.dev.kv_namespaces]]
+[[env.preview.kv_namespaces]]
 binding = "tzero"
 id = "7247733a10a547d4b828c6963e477a7d"
 
-[[env.prod.kv_namspaces]]
+[[env.production.kv_namspaces]]
 binding = "tzero"
 id = "566f39a4d2ff4087b45b216bde0ebff9"
