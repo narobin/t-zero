@@ -2,6 +2,7 @@
 // for information about these interfaces
 declare global {
 	namespace App {
+
         interface Platform {
             env: {
                 tzero: KVNamespace
@@ -9,6 +10,15 @@ declare global {
             cf: CfProperties
             ctx: ExecutionContext
         }
+
+        type RequestEvent = RequestEvent & {
+            platform: Readonly<Platform>
+            user: {
+                email?: string;
+                isLoggedIn: boolean;
+            }
+        }
+
     }
 }
 

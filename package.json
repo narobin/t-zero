@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "dev": "vite dev",
+    "dev": "ENV=preview vite dev",
     "build": "vite build",
     "preview": "npm run build && wrangler pages dev",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

@@ -16,3 +16,7 @@ id = "7247733a10a547d4b828c6963e477a7d"
 [[env.production.kv_namspaces]]
 binding = "tzero"
 id = "566f39a4d2ff4087b45b216bde0ebff9"
+
+[[kv_namespaces]]
+binding = "tzero"
+id = "7247733a10a547d4b828c6963e477a7d"
