@@ -6,12 +6,21 @@ $error-color: #DD6031;
 input, button {
   padding: 0.5em 1em;
   background-color: $bg-color;
-  border: none;
+  border: 2px solid $primary-color;
   border-radius: 1rem;
+  &:active {
+    outline: 2px solid $bg-color;
+  }
 }
 
 input[type="text"], input[type="password"], input[type="email"] {
   &::placeholder {
+    color: $secondary-color;
+  }
+}
+
+input[type="datetime-local"] {
+  &:placeholder-shown {
     color: $secondary-color;
   }
 }

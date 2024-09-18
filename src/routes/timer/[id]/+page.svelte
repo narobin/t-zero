@@ -4,14 +4,12 @@
     export let data;
 </script>
 
-<div class="timer">
+<section>
     <Timer name={data.name} date={data.date} />
-</div>
+</section>
 
 <style lang="scss">
-    .timer {
-      display: grid;
-      place-items: center;
-      height: 100%;
+    section {
+      margin-top: 30dvh;
     }
 </style>

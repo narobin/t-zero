@@ -8,7 +8,7 @@
 </script>
 
 {#if $auth.isLoggedIn}
-    yay, you're logged in
+    <button>log out</button>
 {:else}
     <input type="email" bind:value={email} placeholder="email" />
 

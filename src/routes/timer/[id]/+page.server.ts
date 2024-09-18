@@ -2,7 +2,7 @@ import {error, type Load} from "@sveltejs/kit";
 
 export const load = (async ({ params, fetch }) => {
 
-    const response = await fetch(`/api/timer/${params.id}`);
+    const response = await fetch(`/api/timers/${params.id}`);
 
     const body = await response.json();
 
