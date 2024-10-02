@@ -15,7 +15,11 @@ class Cookies {
 
         document.cookie.split(';').forEach(cookie => {
             const [key,value] = cookie.split("=");
-            this.cookies[key.trim()] = value.trim();
+
+            if(!key)
+                return;
+
+            this.cookies[key.trim()] = value?.trim();
         });
     }
 
